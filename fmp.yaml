@@ -1,0 +1,11 @@
+org_name: XTC
+module_name: IntegrationBoard
+generate:
+  active: false
+  database_driver: false
+  debug: false
+  unity_solution: true
+publish:
+  active: true
+  environment: product
+  repository: grpcs://api.xtech.cloud:29000

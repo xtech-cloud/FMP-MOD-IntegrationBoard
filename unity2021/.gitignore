@@ -1,0 +1,19 @@
+
+/_dist_/
+/_build_/
+/IntegrationBoard/Assets/TextMesh Pro/
+/IntegrationBoard/Assets/TextMesh Pro.meta
+/IntegrationBoard/Assets/Plugins/
+/IntegrationBoard/Assets/Plugins.meta
+/IntegrationBoard/Assets/3rd/
+/IntegrationBoard/Assets/3rd.meta
+/IntegrationBoard/Library/
+/IntegrationBoard/obj/
+/IntegrationBoard/Logs/
+/IntegrationBoard/Temp/
+/IntegrationBoard/UserSettings/
+/IntegrationBoard/*.sln
+/IntegrationBoard/*.csproj
+/IntegrationBoard/.vsconfig
+/IntegrationBoard/.vs/
+/.UNITY_HOME.env
