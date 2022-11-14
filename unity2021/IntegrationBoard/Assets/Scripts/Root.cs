@@ -24,6 +24,18 @@ public class Root : RootBase
         doDestroy();
     }
 
+    private void Update()
+    {
+        /*
+        if (Input.GetMouseButtonDown(0))
+        {
+            Debug.Log(Input.mousePosition.x);
+            Debug.Log(Input.mousePosition.y);
+            entry_.__DebugDirectOpen(System.DateTime.UtcNow.ToString(), "rectangle", "assloud://", "XTC.IntegrationBoard/1", 0, Input.mousePosition.x, Input.mousePosition.y);
+        }
+        */
+    }
+
     private void OnGUI()
     {
         if (GUI.Button(new Rect(0, 0, 60, 30), "Create"))
@@ -58,7 +70,7 @@ public class Root : RootBase
 
         if (GUI.Button(new Rect(0, 180, 60, 30), "DirectOpen"))
         {
-            entry_.__DebugDirectOpen("test", "rectangle", "assloud://", "XTC.IntegrationBoard/1", 0, Random.Range(-Screen.width / 2, Screen.width / 2), Random.Range(-Screen.height / 2, Screen.height / 2));
+            entry_.__DebugDirectOpen(System.DateTime.UtcNow.ToString(), "rectangle", "assloud://", "XTC.IntegrationBoard/1", 0, Random.Range(-Screen.width / 2, Screen.width / 2), Random.Range(-Screen.height / 2, Screen.height / 2));
         }
 
         if (GUI.Button(new Rect(0, 210, 60, 30), "DirectClose"))

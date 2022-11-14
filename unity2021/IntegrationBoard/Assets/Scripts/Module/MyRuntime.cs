@@ -42,6 +42,13 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             }
 
             instance = new MyInstance(_uid, _style, config_, catalog_, logger_, settings_, entry_, mono_, rootAttachment);
+            instance.GenerateAlignGrid(rootUI.GetComponent<RectTransform>().rect.size);
+            // 获取吸附后的坐标
+            instance.StickAlignGrid(_positionX, _positionY);
+            // 检测吸附后的坐标是否和其他已存在的实例产生交集
+            if (detectCross(instance))
+                yield break;
+
             instance.preloadsRepetition = new Dictionary<string, object>(preloads_);
             instances[_uid] = instance;
             instance.InstantiateUI(instanceUI);
@@ -52,7 +59,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             instance.SetupBridges();
             yield return new WaitForSeconds(_delay);
             instance.contentObjectsPool.Prepare();
-            instance.rootUI.transform.Find("Board").GetComponent<RectTransform>().anchoredPosition = new Vector2(_positionX, _positionY);
+            instance.rootUI.transform.Find("Board").GetComponent<RectTransform>().anchoredPosition = new Vector2(instance.stickedX, instance.stickedY);
             instance.HandleOpened(_source, _uri);
         }
 
@@ -75,6 +82,22 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             instance.themeObjectsPool.Dispose();
             // 动态注销直系的MVCS
             entry_.DynamicCancel(_uid, logger_);
+        }
+
+        private bool detectCross(MyInstance _instance)
+        {
+            bool hasCross = false;
+            foreach (var instance in instances.Values)
+            {
+                if (null == instance.stickedAlignGrid)
+                    continue;
+                if (instance.stickedAlignGrid.Row == _instance.stickedAlignGrid.Row && instance.stickedAlignGrid.Column == _instance.stickedAlignGrid.Column)
+                {
+                    hasCross = true;
+                    break;
+                }
+            }
+            return hasCross;
         }
 
     }

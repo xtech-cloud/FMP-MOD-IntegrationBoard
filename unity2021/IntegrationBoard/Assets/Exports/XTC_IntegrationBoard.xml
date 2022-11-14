@@ -9,6 +9,9 @@
       address: 地址
     -->
   <GRPC address="https://localhost:19000"/>
+  <!-- 交融检测
+      mode: 模式，可选值为 circular, rectangle
+  -->
   <!-- 样式列表
       name: 名称
       Style.AlignGrid: 对齐网格，将屏幕划分为n行xm列的网格，可控制面板吸附在最近的网格的中心位置

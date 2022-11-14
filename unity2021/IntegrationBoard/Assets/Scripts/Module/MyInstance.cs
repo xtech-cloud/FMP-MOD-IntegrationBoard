@@ -19,9 +19,21 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
     /// </summary>
     public class MyInstance : MyInstanceBase
     {
+        public class AlignGrid
+        {
+            public AlignGrid(Vector2 _center, int _row, int _column)
+            {
+                Center = _center;
+                Row = _row;
+                Column = _column;
+            }
+            public Vector2 Center { get; private set; }
+            public int Row { get; private set; }
+            public int Column { get; private set; }
+        }
+
         public class UiReference
         {
-            public Transform tfAlignGrid;
             public Transform tfPanel;
             public Transform tfTabBar;
             public Transform tfTitleBar;
@@ -43,6 +55,19 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public Dictionary<string, GameObject> pageS = new Dictionary<string, GameObject>();
         }
 
+        /// <summary>
+        /// 吸附后的对齐网格
+        /// </summary>
+        public AlignGrid stickedAlignGrid { get; private set; }
+        /// <summary>
+        /// 吸附后的x坐标
+        /// </summary>
+        public float stickedX { get; private set; }
+        /// <summary>
+        /// 吸附后的y坐标
+        /// </summary>
+        public float stickedY { get; private set; }
+
         private UiReference uiReference_ = new UiReference();
         private ContentReader contentReader_ = null;
 
@@ -52,7 +77,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         private Vector2 pictureFitedSize_;
         private bool topicVisible_;
         private bool descriptionVisible_;
-        private Vector2[] alignGridS_;
+        private AlignGrid[] alignGridS_;
 
 
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
@@ -69,7 +94,6 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </remarks>
         public void HandleCreated()
         {
-            uiReference_.tfAlignGrid = rootUI.transform.Find("AlignGrid");
             uiReference_.tfPanel = rootUI.transform.Find("Board/Panel");
             uiReference_.tfTabBar = rootUI.transform.Find("Board/TabBar");
             uiReference_.tfTitleBar = rootUI.transform.Find("Board/Panel/__home__/TitleBar");
@@ -94,25 +118,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             createTabs();
             bindEvents();
 
-            // 创建对齐网格
-            var instanceSize = rootUI.GetComponent<RectTransform>().rect.size;
-            alignGridS_ = new Vector2[style_.alignGrid.row * style_.alignGrid.column];
-            var grid = uiReference_.tfAlignGrid.Find("grid");
-            grid.gameObject.SetActive(false);
-            int height = (int)(instanceSize.y / style_.alignGrid.row);
-            int width = (int)(instanceSize.x / style_.alignGrid.column);
-            for (int i = 0; i < style_.alignGrid.row; i++)
+            if (null == alignGridS_)
             {
-                for (int j = 0; j < style_.alignGrid.column; j++)
-                {
-                    float x = -instanceSize.x / 2 + j * width + width / 2;
-                    float y = -instanceSize.y / 2 + i * height + height / 2;
-                    var clone = GameObject.Instantiate(grid.gameObject, grid.parent);
-                    clone.SetActive(true);
-                    clone.GetComponent<RectTransform>().anchoredPosition = new Vector2(x, y);
-                    clone.GetComponent<RectTransform>().sizeDelta = new Vector2(width, height);
-                    alignGridS_[i * style_.alignGrid.row + j] = new Vector2(x, y);
-                }
+                var instanceSize = rootUI.GetComponent<RectTransform>().rect.size;
+                GenerateAlignGrid(instanceSize);
             }
         }
 
@@ -131,25 +140,6 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </remarks>
         public void HandleOpened(string _source, string _uri)
         {
-            var rtBoard = rootUI.transform.Find("Board").GetComponent<RectTransform>();
-            float stickX = rtBoard.anchoredPosition.x;
-            float stickY = rtBoard.anchoredPosition.y;
-            float minDistance = float.MaxValue;
-            foreach (var grid in alignGridS_)
-            {
-                float offset = Vector2.Distance(rtBoard.anchoredPosition, grid);
-                if (offset < minDistance)
-                {
-                    minDistance = offset;
-                    if (style_.alignGrid.stickH)
-                        stickX = grid.x;
-                    if (style_.alignGrid.stickV)
-                        stickY = grid.y;
-                }
-            }
-            rtBoard.anchoredPosition = new Vector2(stickX, stickY);
-
-            float x = rtBoard.anchoredPosition.x;
             refreshContent(_source, _uri);
             rootUI.gameObject.SetActive(true);
         }
@@ -162,6 +152,29 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             rootUI.gameObject.SetActive(false);
         }
 
+        /// <summary>
+        /// 生成对齐网格
+        /// </summary>
+        /// <remarks>
+        /// 此函数可以在HandleCreated之前调用
+        /// </remarks>
+        public void GenerateAlignGrid(Vector2 _viewportSize)
+        {
+            // 创建对齐网格
+            alignGridS_ = new AlignGrid[style_.alignGrid.row * style_.alignGrid.column];
+            int height = (int)(_viewportSize.y / style_.alignGrid.row);
+            int width = (int)(_viewportSize.x / style_.alignGrid.column);
+            for (int i = 0; i < style_.alignGrid.row; i++)
+            {
+                for (int j = 0; j < style_.alignGrid.column; j++)
+                {
+                    float x = -_viewportSize.x / 2 + j * width + width / 2;
+                    float y = -_viewportSize.y / 2 + i * height + height / 2;
+                    alignGridS_[i * style_.alignGrid.row + j] = new AlignGrid(new Vector2(x, y), i, j);
+                }
+            }
+        }
+
         public void ActivatePage(string _page)
         {
             foreach (var pair in uiReference_.pageS)
@@ -170,10 +183,36 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             }
         }
 
+        /// <summary>
+        /// 吸附对齐网格
+        /// </summary>
+        /// <param name="_x">x坐标</param>
+        /// <param name="_y">y坐标</param>
+        /// <param name="_stickedX">吸附后的x坐标</param>
+        /// <param name="_stickedY">吸附后的y坐标</param>
+        public void StickAlignGrid(float _x, float _y)
+        {
+            stickedX = _x;
+            stickedY = _y;
+            Vector2 position = new Vector2(_x, _y);
+            float minDistance = float.MaxValue;
+            foreach (var grid in alignGridS_)
+            {
+                float offset = Vector2.Distance(position, grid.Center);
+                if (offset < minDistance)
+                {
+                    minDistance = offset;
+                    if (style_.alignGrid.stickH)
+                        stickedX = grid.Center.x;
+                    if (style_.alignGrid.stickV)
+                        stickedY = grid.Center.y;
+                    stickedAlignGrid = grid;
+                }
+            }
+        }
+
         private void applyStyle()
         {
-            uiReference_.tfAlignGrid.gameObject.SetActive(style_.alignGrid.visible);
-
             var rtTemplate = rootUI.transform.Find("Board").GetComponent<RectTransform>();
             rtTemplate.sizeDelta = new Vector2(style_.width, style_.height);
 
