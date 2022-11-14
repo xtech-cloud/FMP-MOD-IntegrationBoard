@@ -21,6 +21,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
     {
         public class UiReference
         {
+            public Transform tfAlignGrid;
             public Transform tfPanel;
             public Transform tfTabBar;
             public Transform tfTitleBar;
@@ -51,6 +52,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         private Vector2 pictureFitedSize_;
         private bool topicVisible_;
         private bool descriptionVisible_;
+        private Vector2[] alignGridS_;
 
 
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
@@ -67,6 +69,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </remarks>
         public void HandleCreated()
         {
+            uiReference_.tfAlignGrid = rootUI.transform.Find("AlignGrid");
             uiReference_.tfPanel = rootUI.transform.Find("Board/Panel");
             uiReference_.tfTabBar = rootUI.transform.Find("Board/TabBar");
             uiReference_.tfTitleBar = rootUI.transform.Find("Board/Panel/__home__/TitleBar");
@@ -90,6 +93,27 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             applyStyle();
             createTabs();
             bindEvents();
+
+            // 创建对齐网格
+            var instanceSize = rootUI.GetComponent<RectTransform>().rect.size;
+            alignGridS_ = new Vector2[style_.alignGrid.row * style_.alignGrid.column];
+            var grid = uiReference_.tfAlignGrid.Find("grid");
+            grid.gameObject.SetActive(false);
+            int height = (int)(instanceSize.y / style_.alignGrid.row);
+            int width = (int)(instanceSize.x / style_.alignGrid.column);
+            for (int i = 0; i < style_.alignGrid.row; i++)
+            {
+                for (int j = 0; j < style_.alignGrid.column; j++)
+                {
+                    float x = -instanceSize.x / 2 + j * width + width / 2;
+                    float y = -instanceSize.y / 2 + i * height + height / 2;
+                    var clone = GameObject.Instantiate(grid.gameObject, grid.parent);
+                    clone.SetActive(true);
+                    clone.GetComponent<RectTransform>().anchoredPosition = new Vector2(x, y);
+                    clone.GetComponent<RectTransform>().sizeDelta = new Vector2(width, height);
+                    alignGridS_[i * style_.alignGrid.row + j] = new Vector2(x, y);
+                }
+            }
         }
 
         /// <summary>
@@ -107,6 +131,25 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </remarks>
         public void HandleOpened(string _source, string _uri)
         {
+            var rtBoard = rootUI.transform.Find("Board").GetComponent<RectTransform>();
+            float stickX = rtBoard.anchoredPosition.x;
+            float stickY = rtBoard.anchoredPosition.y;
+            float minDistance = float.MaxValue;
+            foreach (var grid in alignGridS_)
+            {
+                float offset = Vector2.Distance(rtBoard.anchoredPosition, grid);
+                if (offset < minDistance)
+                {
+                    minDistance = offset;
+                    if (style_.alignGrid.stickH)
+                        stickX = grid.x;
+                    if (style_.alignGrid.stickV)
+                        stickY = grid.y;
+                }
+            }
+            rtBoard.anchoredPosition = new Vector2(stickX, stickY);
+
+            float x = rtBoard.anchoredPosition.x;
             refreshContent(_source, _uri);
             rootUI.gameObject.SetActive(true);
         }
@@ -129,6 +172,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
         private void applyStyle()
         {
+            uiReference_.tfAlignGrid.gameObject.SetActive(style_.alignGrid.visible);
+
             var rtTemplate = rootUI.transform.Find("Board").GetComponent<RectTransform>();
             rtTemplate.sizeDelta = new Vector2(style_.width, style_.height);
 
@@ -339,10 +384,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             });
             uiReference_.btnTabClose.onClick.AddListener(() =>
             {
-                Dictionary<string, object> parameters = new Dictionary<string, object>();
-                parameters["uid"] = this.uid;
-                parameters["delay"] = 0.0f;
-                (entry_ as MyEntry).getDummyModel().Publish(MySubject.Close, parameters);
+                foreach (var subject in style_.tabBar.closeButton.subjects)
+                {
+                    publishSubject(subject);
+                }
             });
             uiReference_.imgPicture.GetComponent<Button>().onClick.AddListener(() =>
             {

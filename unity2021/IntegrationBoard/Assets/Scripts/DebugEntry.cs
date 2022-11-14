@@ -10,7 +10,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
     /// <remarks>
     /// 不参与模块编译，仅用于在编辑器中开发调试
     /// </remarks>
-    public class DebugEntry : MyEntry 
+    public class DebugEntry : MyEntry
     {
         /// <summary>
         /// 调试预加载
@@ -58,13 +58,13 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             data["delay"] = _delay;
             modelDummy_.Publish(MySubjectBase.Open, data);
         }
-        
+
         /// <summary>
         /// 调试显示
         /// </summary>
         /// <param name="_uid">实例的uid</param>
         /// <param name="_delay">延迟时间，单位秒</param>
-        public void __DebugShow(string _uid,  float _delay)
+        public void __DebugShow(string _uid, float _delay)
         {
             var data = new Dictionary<string, object>();
             data["uid"] = _uid;
@@ -77,7 +77,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </summary>
         /// <param name="_uid">实例的uid</param>
         /// <param name="_delay">延迟时间，单位秒</param>
-        public void __DebugHide(string _uid,  float _delay)
+        public void __DebugHide(string _uid, float _delay)
         {
             var data = new Dictionary<string, object>();
             data["uid"] = _uid;
@@ -107,6 +107,27 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             var data = new Dictionary<string, object>();
             data["uid"] = _uid;
             modelDummy_.Publish(MySubjectBase.Delete, data);
+        }
+
+        public void __DebugDirectOpen(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY)
+        {
+            var data = new Dictionary<string, object>();
+            data["uid"] = _uid;
+            data["style"] = _style;
+            data["source"] = _source;
+            data["uri"] = _uri;
+            data["delay"] = _delay;
+            data["position_x"] = _positionX;
+            data["position_y"] = _positionY;
+            modelDummy_.Publish(MySubject.DirectOpen, data);
+        }
+
+        public void __DebugDirectClose(string _uid, float _delay)
+        {
+            var data = new Dictionary<string, object>();
+            data["uid"] = _uid;
+            data["delay"] = _delay;
+            modelDummy_.Publish(MySubject.DirectClose, data);
         }
     }
 }

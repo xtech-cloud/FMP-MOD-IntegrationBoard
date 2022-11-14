@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using LibMVCS = XTC.FMP.LIB.MVCS;
-using XTC.FMP.MOD.IntegrationBoard.LIB.MVCS;
+using System.Collections;
 
 namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 {
@@ -18,6 +18,65 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             : base(_mono, _config, _catalog, _settings, _logger, _entry)
         {
         }
+
+        public void DirectOpenInstanceAsync(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY)
+        {
+            mono_.StartCoroutine(directOpenInstanceAsync(_uid, _style, _source, _uri, _delay, _positionX, _positionY));
+        }
+
+        public void DirectCloseInstanceAsync(string _uid, float _delay)
+        {
+            mono_.StartCoroutine(directCloseInstanceAsync(_uid, _delay));
+        }
+
+        private IEnumerator directOpenInstanceAsync(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY)
+        {
+            logger_.Debug("directopen instance of {0}, uid is {1}, style is {2}", MyEntryBase.ModuleName, _uid, _style);
+            // 延时一帧执行，在发布消息时不能动态注册
+            yield return new WaitForEndOfFrame();
+
+            MyInstance instance;
+            if (instances.TryGetValue(_uid, out instance))
+            {
+                yield break;
+            }
+
+            instance = new MyInstance(_uid, _style, config_, catalog_, logger_, settings_, entry_, mono_, rootAttachment);
+            instance.preloadsRepetition = new Dictionary<string, object>(preloads_);
+            instances[_uid] = instance;
+            instance.InstantiateUI(instanceUI);
+            instance.themeObjectsPool.Prepare();
+            instance.HandleCreated();
+            // 动态注册直系的MVCS
+            entry_.DynamicRegister(_uid, logger_);
+            instance.SetupBridges();
+            yield return new WaitForSeconds(_delay);
+            instance.contentObjectsPool.Prepare();
+            instance.rootUI.transform.Find("Board").GetComponent<RectTransform>().anchoredPosition = new Vector2(_positionX, _positionY);
+            instance.HandleOpened(_source, _uri);
+        }
+
+        private IEnumerator directCloseInstanceAsync(string _uid, float _delay)
+        {
+            logger_.Debug("directclose instance of {0}, uid is {1}", MyEntryBase.ModuleName, _uid);
+            MyInstance instance;
+            if (!instances.TryGetValue(_uid, out instance))
+            {
+                yield break;
+            }
+            yield return new WaitForSeconds(_delay);
+            instance.HandleClosed();
+            instance.contentObjectsPool.Dispose();
+            // 延时一帧执行，在发布消息时不能动态注销
+            yield return new WaitForEndOfFrame();
+            instance.HandleDeleted();
+            GameObject.Destroy(instance.rootUI);
+            instances.Remove(_uid);
+            instance.themeObjectsPool.Dispose();
+            // 动态注销直系的MVCS
+            entry_.DynamicCancel(_uid, logger_);
+        }
+
     }
 }
 

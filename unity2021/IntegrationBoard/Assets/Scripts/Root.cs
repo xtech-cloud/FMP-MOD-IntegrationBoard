@@ -55,6 +55,16 @@ public class Root : RootBase
         {
             entry_.__DebugDelete("test");
         }
+
+        if (GUI.Button(new Rect(0, 180, 60, 30), "DirectOpen"))
+        {
+            entry_.__DebugDirectOpen("test", "rectangle", "assloud://", "XTC.IntegrationBoard/1", 0, Random.Range(-Screen.width / 2, Screen.width / 2), Random.Range(-Screen.height / 2, Screen.height / 2));
+        }
+
+        if (GUI.Button(new Rect(0, 210, 60, 30), "DirectClose"))
+        {
+            entry_.__DebugDirectClose("test", 0);
+        }
     }
 }
 

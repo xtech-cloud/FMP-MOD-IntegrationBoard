@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using LibMVCS = XTC.FMP.LIB.MVCS;
 
 namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
@@ -16,6 +17,14 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
         public DummyModel(string _uid) : base(_uid)
         {
+        }
+
+        private DummyStatus status
+        {
+            get
+            {
+                return status_ as DummyStatus;
+            }
         }
     }
 }

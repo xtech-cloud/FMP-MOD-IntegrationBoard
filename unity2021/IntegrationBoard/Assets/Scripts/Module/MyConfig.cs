@@ -9,6 +9,20 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
     /// </summary>
     public class MyConfig : MyConfigBase
     {
+        public class AlignGrid
+        {
+            [XmlAttribute("visible")]
+            public bool visible { get; set; } = false;
+            [XmlAttribute("row")]
+            public int row { get; set; } = 0;
+            [XmlAttribute("column")]
+            public int column { get; set; } = 0;
+            [XmlAttribute("stickH")]
+            public bool stickH { get; set; } = false;
+            [XmlAttribute("stickV")]
+            public bool stickV { get; set; } = false;
+        }
+
         public class Border
         {
             [XmlAttribute("top")]
@@ -50,6 +64,12 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public Subject[] subjects { get; set; } = new Subject[0];
         }
 
+        public class CloseButton : UiElement
+        {
+            [XmlArray("Subjects"), XmlArrayItem("Subject")]
+            public Subject[] subjects { get; set; } = new Subject[0];
+        }
+
         public class TabBar
         {
             [XmlAttribute]
@@ -57,7 +77,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             [XmlElement("Background")]
             public VisualUiElement background { get; set; } = new VisualUiElement();
             [XmlElement("CloseButton")]
-            public UiElement closeButton { get; set; } = new UiElement();
+            public CloseButton closeButton { get; set; } = new CloseButton();
             [XmlArray("TabButtons"), XmlArrayItem("TabButton")]
             public TabButton[] tabButtons { get; set; } = new TabButton[0];
         }
@@ -92,6 +112,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public int width { get; set; } = 0;
             [XmlAttribute("height")]
             public int height { get; set; } = 0;
+            [XmlElement("AlignGrid")]
+            public AlignGrid alignGrid { get; set; } = new AlignGrid();
             [XmlElement("TitleBarBackground")]
             public VisualUiElement titleBarBackground { get; set; } = new VisualUiElement();
             [XmlElement("TopicBackground")]
