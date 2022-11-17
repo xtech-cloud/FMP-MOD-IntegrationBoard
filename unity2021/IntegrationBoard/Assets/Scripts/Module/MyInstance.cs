@@ -531,7 +531,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                                     {
                                         Dictionary<string, object> variableS = new Dictionary<string, object>();
                                         variableS["{{uid}}"] = this.uid;
-                                        variableS["{{uri}}"] = contentKV_value;
+                                        // assloud中的相对路径
+                                        variableS["{{uri}}"] = string.Format("{0}/{1}", _content.foreign_bundle_uuid, contentKV_value);
                                         publishSubject(pageSlot.refreshSubject, variableS);
                                     }
                                 }
