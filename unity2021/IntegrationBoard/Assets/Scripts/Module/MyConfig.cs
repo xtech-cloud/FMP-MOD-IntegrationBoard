@@ -44,8 +44,12 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
         public class PageSlot
         {
-            [XmlElement("Subject")]
-            public Subject subject { get; set; } = new Subject();
+            [XmlAttribute("page")]
+            public string page { get; set; } = "";
+            [XmlElement("InlaySubject")]
+            public Subject inlaySubject { get; set; } = new Subject();
+            [XmlElement("RefreshSubject")]
+            public Subject refreshSubject { get; set; } = new Subject();
         }
 
         public class TabButton
@@ -68,8 +72,6 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public int uncheckedHeight { get; set; } = 0;
             [XmlArray("Subjects"), XmlArrayItem("Subject")]
             public Subject[] subjects { get; set; } = new Subject[0];
-            [XmlElement("PageSlot")]
-            public PageSlot pageSlot { get; set; } = new PageSlot();
         }
 
         public class CloseButton : UiElement
@@ -144,6 +146,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public UiElement unlikedIcon { get; set; } = new UiElement();
             [XmlElement("SizeRange")]
             public SizeRange sizeRange { get; set; } = new SizeRange();
+            [XmlArray("PageSlots"), XmlArrayItem("PageSlot")]
+            public PageSlot[] pageSlotS { get; set; } = new PageSlot[0];
             [XmlElement("TabBar")]
             public TabBar tabBar { get; set; } = new TabBar();
             [XmlElement("ImageToolBox")]

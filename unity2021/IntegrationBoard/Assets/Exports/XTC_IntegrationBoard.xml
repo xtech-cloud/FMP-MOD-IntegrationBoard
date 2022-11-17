@@ -88,6 +88,24 @@
           <Anchor height="36" width="36"/>
         </BackButton>
       </ImageToolBox>
+      <PageSlots>
+        <PageSlot page="media">
+          <InlaySubject message="/XTC/MediaCenter/Inlay">
+            <Parameters>
+              <Parameter key="uid" value="{{uid}}" type="_"/>
+              <Parameter key="style" value="default" type="string"/>
+              <Parameter key="slot" value="{{page_slot}}" type="_"/>
+            </Parameters>
+          </InlaySubject>
+          <RefreshSubject message="/XTC/MediaCenter/Refresh">
+            <Parameters>
+              <Parameter key="uid" value="{{uid}}" type="_"/>
+              <Parameter key="source" value="assloud://" type="string"/>
+              <Parameter key="uri" value="{{uri}}" type="_"/>
+            </Parameters>
+          </RefreshSubject>
+        </PageSlot>
+      </PageSlots>
       <TabBar space="24">
         <Background image="rectangle_tabbar_bg.png" color="#2729303F">
           <Border top="56" bottom="56" left="56" right="56"/>
@@ -139,15 +157,6 @@
                 </Parameters>
               </Subject>
             </Subjects>
-            <PageSlot>
-              <Subject message="/XTC/MediaCenter/Inlay">
-                <Parameters>
-                  <Parameter key="uid" value="{{uid}}" type="_"/>
-                  <Parameter key="style" value="default" type="string"/>
-                  <Parameter key="slot" value="{{page_slot}}" type="_"/>
-                </Parameters>
-              </Subject>
-            </PageSlot>
           </TabButton>
           <TabButton name="search" contentKey="_"
                      uncheckedIcon="rectangle_tab_search_unchecked.png" uncheckedWidth="44" uncheckedHeight="44"

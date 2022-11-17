@@ -523,6 +523,19 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                             string contentKV_value;
                             _content.kvS.TryGetValue(tab.contentKey, out contentKV_value);
                             visible = tab.contentKey == "_" || !string.IsNullOrEmpty(contentKV_value);
+                            if (!string.IsNullOrEmpty(contentKV_value))
+                            {
+                                foreach (var pageSlot in style_.pageSlotS)
+                                {
+                                    if (pageSlot.page == tab.name)
+                                    {
+                                        Dictionary<string, object> variableS = new Dictionary<string, object>();
+                                        variableS["{{uid}}"] = this.uid;
+                                        variableS["{{uri}}"] = contentKV_value;
+                                        publishSubject(pageSlot.refreshSubject, variableS);
+                                    }
+                                }
+                            }
                             break;
                         }
                     }
@@ -605,12 +618,16 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     var pageClone = GameObject.Instantiate(uiReference_.pageTemplate.gameObject, uiReference_.pageTemplate.parent);
                     uiReference_.pageS[tab.name] = pageClone;
                     pageClone.name = tab.name;
-                    if (!string.IsNullOrEmpty(tab.pageSlot.subject.message))
+                    foreach (var pageSlot in style_.pageSlotS)
                     {
-                        Dictionary<string, object> variableS = new Dictionary<string, object>();
-                        variableS["{{uid}}"] = this.uid;
-                        variableS["{{page_slot}}"] = pageClone;
-                        publishSubject(tab.pageSlot.subject, variableS);
+                        if (pageSlot.page == tab.name)
+                        {
+                            Dictionary<string, object> variableS = new Dictionary<string, object>();
+                            variableS["{{uid}}"] = this.uid;
+                            variableS["{{page_slot}}"] = pageClone;
+                            publishSubject(pageSlot.inlaySubject, variableS);
+                            break;
+                        }
                     }
                 }
             }
