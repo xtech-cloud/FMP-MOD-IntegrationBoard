@@ -143,6 +143,7 @@
               <Subject message="/XTC/MediaCenter/Inlay">
                 <Parameters>
                   <Parameter key="uid" value="{{uid}}" type="_"/>
+                  <Parameter key="style" value="default" type="string"/>
                   <Parameter key="slot" value="{{page_slot}}" type="_"/>
                 </Parameters>
               </Subject>

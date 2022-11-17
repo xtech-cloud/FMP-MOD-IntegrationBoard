@@ -608,6 +608,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     if (!string.IsNullOrEmpty(tab.pageSlot.subject.message))
                     {
                         Dictionary<string, object> variableS = new Dictionary<string, object>();
+                        variableS["{{uid}}"] = this.uid;
                         variableS["{{page_slot}}"] = pageClone;
                         publishSubject(tab.pageSlot.subject, variableS);
                     }
