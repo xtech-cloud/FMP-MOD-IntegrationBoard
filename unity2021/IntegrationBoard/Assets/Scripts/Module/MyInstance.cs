@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using System;
 using System.Collections;
+using UnityEngine.Rendering;
 
 namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 {
@@ -423,9 +424,11 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             });
             uiReference_.btnTabClose.onClick.AddListener(() =>
             {
+                Dictionary<string, object> variableS = new Dictionary<string, object>();
+                variableS["{{uid}}"] = this.uid;
                 foreach (var subject in style_.tabBar.closeButton.subjects)
                 {
-                    publishSubject(subject);
+                    publishSubject(subject, variableS);
                 }
             });
             uiReference_.imgPicture.GetComponent<Button>().onClick.AddListener(() =>
@@ -513,8 +516,16 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 uiReference_.toggleTabS.ForEach((_toggle) =>
                 {
                     bool visible = false;
-                    if (_toggle.name == "__home__")
-                        visible = true;
+                    foreach (var tab in style_.tabBar.tabButtons)
+                    {
+                        if (tab.name == _toggle.name)
+                        {
+                            string contentKV_value;
+                            _content.kvS.TryGetValue(tab.contentKey, out contentKV_value);
+                            visible = tab.contentKey == "_" || !string.IsNullOrEmpty(contentKV_value);
+                            break;
+                        }
+                    }
                     _toggle.gameObject.SetActive(visible);
                 });
                 // 刷新Tab后不允许全部关闭
@@ -578,9 +589,11 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     if (!_toggle)
                         return;
                     mono_.StartCoroutine(relayoutTabBar());
+                    Dictionary<string, object> variableS = new Dictionary<string, object>();
+                    variableS["{{uid}}"] = this.uid;
                     foreach (var subject in tab.subjects)
                     {
-                        publishSubject(subject);
+                        publishSubject(subject, variableS);
                     }
                 });
                 clone.GetComponent<RectTransform>().sizeDelta = new Vector2(tab.uncheckedWidth, tab.uncheckedHeight);
@@ -592,6 +605,12 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     var pageClone = GameObject.Instantiate(uiReference_.pageTemplate.gameObject, uiReference_.pageTemplate.parent);
                     uiReference_.pageS[tab.name] = pageClone;
                     pageClone.name = tab.name;
+                    if (!string.IsNullOrEmpty(tab.pageSlot.subject.message))
+                    {
+                        Dictionary<string, object> variableS = new Dictionary<string, object>();
+                        variableS["{{page_slot}}"] = pageClone;
+                        publishSubject(tab.pageSlot.subject, variableS);
+                    }
                 }
             }
             uiReference_.btnTabClose.transform.SetAsLastSibling();
@@ -624,13 +643,18 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             rtCloseButton.anchoredPosition = new Vector2(lastX + rtCloseButton.sizeDelta.x / 2, 0);
         }
 
-        private void publishSubject(MyConfigBase.Subject _subject)
+        private void publishSubject(MyConfigBase.Subject _subject, Dictionary<string, object> _variableS)
         {
             Dictionary<string, object> parameters = new Dictionary<string, object>();
             foreach (var parameter in _subject.parameters)
             {
-                if (parameter.type == "string")
-                    parameters[parameter.key] = parameter.value.Replace("{{uid}}", this.uid);
+                if (parameter.type == "_")
+                {
+                    if (_variableS.ContainsKey(parameter.value))
+                        parameters[parameter.key] = _variableS[parameter.value];
+                }
+                else if (parameter.type == "string")
+                    parameters[parameter.key] = parameter.value;
                 else if (parameter.type == "int")
                     parameters[parameter.key] = int.Parse(parameter.value);
                 else if (parameter.type == "float")

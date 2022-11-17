@@ -1,6 +1,8 @@
 {
     "name": "朱德",
-    "kvS": {},
+    "kvS": {
+        "media": "_resources/1.mc"
+    },
     "alias": "朱德",
     "title": "朱德",
     "caption": "1886年12月1日-1976年7月6日",

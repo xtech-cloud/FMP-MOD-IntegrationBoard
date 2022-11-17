@@ -11,8 +11,6 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
     {
         public class AlignGrid
         {
-            [XmlAttribute("visible")]
-            public bool visible { get; set; } = false;
             [XmlAttribute("row")]
             public int row { get; set; } = 0;
             [XmlAttribute("column")]
@@ -44,10 +42,18 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public Border border { get; set; } = new Border();
         }
 
+        public class PageSlot
+        {
+            [XmlElement("Subject")]
+            public Subject subject { get; set; } = new Subject();
+        }
+
         public class TabButton
         {
             [XmlAttribute("name")]
             public string name { get; set; } = "";
+            [XmlAttribute("contentKey")]
+            public string contentKey { get; set; } = "";
             [XmlAttribute("checkedIcon")]
             public string checkedIcon { get; set; } = "";
             [XmlAttribute("checkedWidth")]
@@ -62,6 +68,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public int uncheckedHeight { get; set; } = 0;
             [XmlArray("Subjects"), XmlArrayItem("Subject")]
             public Subject[] subjects { get; set; } = new Subject[0];
+            [XmlElement("PageSlot")]
+            public PageSlot pageSlot { get; set; } = new PageSlot();
         }
 
         public class CloseButton : UiElement
