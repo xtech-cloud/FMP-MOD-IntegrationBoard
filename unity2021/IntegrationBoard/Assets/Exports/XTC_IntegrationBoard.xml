@@ -128,7 +128,7 @@
               </Subject>
             </Subjects>
           </TabButton>
-          <TabButton name="media" contentKey="media"
+          <TabButton name="media" contentKey="MediaCenter"
                      uncheckedIcon="rectangle_tab_media_unchecked.png" uncheckedWidth="44" uncheckedHeight="44"
                      checkedIcon="rectangle_tab_media_checked.png" checkedWidth="96" checkedHeight="44">
             <Subjects>
