@@ -74,6 +74,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// 封面图片适配后的大小
         /// </summary>
         private Vector2 pictureFitedSize_;
+        private float pictureScale_ = 1.0f;
+
         private bool topicVisible_;
         private bool descriptionVisible_;
         private AlignGrid[] alignGridS_;
@@ -446,15 +448,15 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             });
             uiReference_.tfImageToolBox.Find("btnZoomIn").GetComponent<Button>().onClick.AddListener(() =>
             {
-                var sizeDelta = uiReference_.imgPicture.rectTransform.sizeDelta;
-                sizeDelta = sizeDelta + sizeDelta * 0.2f;
-                uiReference_.imgPicture.rectTransform.sizeDelta = sizeDelta;
+                pictureScale_ += 0.2f;
+                uiReference_.imgPicture.rectTransform.sizeDelta = pictureFitedSize_ * pictureScale_;
             });
             uiReference_.tfImageToolBox.Find("btnZoomOut").GetComponent<Button>().onClick.AddListener(() =>
             {
-                var sizeDelta = uiReference_.imgPicture.rectTransform.sizeDelta;
-                sizeDelta = sizeDelta - sizeDelta * 0.2f;
-                uiReference_.imgPicture.rectTransform.sizeDelta = sizeDelta;
+                pictureScale_ -= 0.2f;
+                if (pictureScale_ < 1.0f)
+                    pictureScale_ = 1.0f;
+                uiReference_.imgPicture.rectTransform.sizeDelta = pictureFitedSize_ * pictureScale_;
             });
             uiReference_.tfImageToolBox.Find("btnBack").GetComponent<Button>().onClick.AddListener(() =>
             {
@@ -467,6 +469,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     uiReference_.frameDescription.gameObject.SetActive(false);
                 uiReference_.tfTitleBar.gameObject.SetActive(true);
                 uiReference_.tfImageToolBox.gameObject.SetActive(false);
+                pictureScale_ = 1.0f;
             });
             uiReference_.tgLike.onValueChanged.AddListener((_toggled) =>
             {
@@ -703,13 +706,20 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
         private void fitImage()
         {
+            pictureScale_ = 1.0f;
             if (style_.coverPicture.fitmode == "none")
                 return;
 
             var rtImageSize = uiReference_.imgPicture.GetComponent<RectTransform>();
             var rtPanelSize = uiReference_.tfPanel.GetComponent<RectTransform>();
-            float offsetX = rtImageSize.sizeDelta.x - rtPanelSize.rect.width;
-            float offsetY = rtImageSize.sizeDelta.y - rtPanelSize.rect.height;
+            // 容器的宽高比
+            float ratioParent = rtPanelSize.rect.size.x / rtPanelSize.rect.size.y;
+            //图片和容器的宽度差值
+            float differenceX = rtImageSize.sizeDelta.x - rtPanelSize.rect.width;
+            //图片和容器的高度差值
+            float differenceY = rtImageSize.sizeDelta.y - rtPanelSize.rect.height;
+            // 将高度的差值换算成和宽度的比例尺一致
+            differenceY *= ratioParent;
 
             float fitX = rtImageSize.sizeDelta.x;
             float fitY = rtImageSize.sizeDelta.y;
@@ -729,30 +739,30 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             if (style_.coverPicture.fitmode == "zoomout")
             {
                 // 两边都大于面板
-                if (offsetX > 0 && offsetY > 0)
+                if (differenceX > 0 && differenceY > 0)
                 {
                     // 适配宽度
-                    if (offsetX > offsetY)
+                    if (differenceX > differenceY)
                         fitWidth();
                     // 适配高度
                     else
                         fitHeight();
                 }
                 // 横向超出面板
-                else if (offsetX > 0 && offsetY <= 0)
+                else if (differenceX > 0 && differenceY <= 0)
                     fitWidth();
                 // 纵向超出面板
-                else if (offsetX <= 0 && offsetY > 0)
+                else if (differenceX <= 0 && differenceY > 0)
                     fitHeight();
             }
             // 放大以适配面板
             else if (style_.coverPicture.fitmode == "zoomout")
             {
                 // 两边都小于面板
-                if (offsetX < 0 && offsetY < 0)
+                if (differenceX < 0 && differenceY < 0)
                 {
                     // 适配高度
-                    if (offsetX < offsetY)
+                    if (differenceX < differenceY)
                         fitHeight();
                     // 适配宽度
                     else
@@ -763,34 +773,35 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             else if (style_.coverPicture.fitmode == "zoom")
             {
                 // 两边都大于面板
-                if (offsetX > 0 && offsetY > 0)
+                if (differenceX > 0 && differenceY > 0)
                 {
                     // 适配宽度
-                    if (offsetX > offsetY)
+                    if (differenceX > differenceY)
                         fitWidth();
                     // 适配高度
                     else
                         fitHeight();
                 }
                 // 两边都小于面板
-                else if (offsetX < 0 && offsetY < 0)
+                else if (differenceX < 0 && differenceY < 0)
                 {
                     // 适配高度
-                    if (offsetX < offsetY)
+                    if (differenceX < differenceY)
                         fitHeight();
                     // 适配宽度
                     else
                         fitWidth();
                 }
                 // 横向超出面板
-                else if (offsetX > 0 && offsetY <= 0)
+                else if (differenceX > 0 && differenceY <= 0)
                     fitWidth();
                 // 纵向超出面板
-                else if (offsetX <= 0 && offsetY > 0)
+                else if (differenceX <= 0 && differenceY > 0)
                     fitHeight();
             }
 
             pictureFitedSize_ = new Vector2(fitX, fitY);
+            pictureScale_ = 1.0f;
             rtImageSize.sizeDelta = pictureFitedSize_;
         }
 
