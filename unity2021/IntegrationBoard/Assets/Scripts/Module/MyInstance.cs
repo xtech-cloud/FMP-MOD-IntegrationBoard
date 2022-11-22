@@ -1,5 +1,3 @@
-
-
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -79,12 +77,16 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         private bool topicVisible_;
         private bool descriptionVisible_;
         private AlignGrid[] alignGridS_;
+        private string activeContentUri_;
+
+        private LibMVCS.Signal signalAddLike_;
 
 
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
             : base(_uid, _style, _config, _catalog, _logger, _settings, _entry, _mono, _rootAttachments)
         {
             contentReader_ = new ContentReader(contentObjectsPool);
+            signalAddLike_ = new LibMVCS.Signal((entry_ as MyEntry).getDummyModel());
         }
 
         /// <summary>
@@ -118,6 +120,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             applyStyle();
             createTabs();
             bindEvents();
+            signalAddLike_.Connect(handleLikeChanged);
 
             if (null == alignGridS_)
             {
@@ -131,6 +134,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </summary>
         public void HandleDeleted()
         {
+            //TODO Upgrade oelMVCS
+            //signalAddLike_.Disconnect(handleLikeChanged);
         }
 
         /// <summary>
@@ -463,10 +468,20 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 uiReference_.tfTitleBar.gameObject.SetActive(true);
                 uiReference_.tfImageToolBox.gameObject.SetActive(false);
             });
+            uiReference_.tgLike.onValueChanged.AddListener((_toggled) =>
+            {
+                if (_toggled)
+                {
+                    uiReference_.tgLike.interactable = false;
+                    (entry_ as MyEntry).getDummyModel().SaveAddLike(activeContentUri_);
+                    signalAddLike_.Emit(null);
+                }
+            });
         }
 
         private void refreshContent(string _source, string _uri)
         {
+            activeContentUri_ = _uri;
             // 在刷新内容前先隐藏相关组件
             uiReference_.imgPicture.gameObject.SetActive(false);
             uiReference_.tgLike.gameObject.SetActive(false);
@@ -512,6 +527,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 {
 
                 });
+                signalAddLike_.Emit(null);
+                uiReference_.tgLike.interactable = true;
                 uiReference_.toggleTabS.First().isOn = true;
                 uiReference_.toggleTabS.ForEach((_toggle) =>
                 {
@@ -790,6 +807,14 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             float height = Mathf.Min(rtText.sizeDelta.y - rtScrollView.sizeDelta.y, style_.sizeRange.descriptionMaxHeight);
             sizeDelta.y = height;
             rtFrame.sizeDelta = sizeDelta;
+        }
+
+        private void handleLikeChanged(LibMVCS.Model.Status _status, object _data)
+        {
+            DummyModel.DummyStatus status = _status as DummyModel.DummyStatus;
+            int count;
+            status.likeStatusS.TryGetValue(activeContentUri_, out count);
+            uiReference_.tgLike.transform.Find("Label").GetComponent<Text>().text = count.ToString();
         }
     }
 }
