@@ -50,10 +50,10 @@
   <Styles>
     <Style name="rectangle" width="880" height="740">
       <AlignGrid row="1" column="1" stickH="true" stickV="true"/>
-      <TitleBarBackground image="rectangle_titlebar_bg.png" color="#3333331E">
+      <TitleBarBackground image="rectangle_titlebar_bg.png" color="#3333334C">
         <Border top="56" bottom="56" left="56" right="56"/>
       </TitleBarBackground>
-      <PanelBackground image="rectangle_panel_bg.png" color="#27293050">
+      <PanelBackground image="rectangle_panel_bg.png" color="#272930CC">
         <Border top="56" bottom="56" left="56" right="56"/>
       </PanelBackground>
       <LikeBackground image="rectangle_button.png" color="#5B656F46">
@@ -107,7 +107,7 @@
         </PageSlot>
       </PageSlots>
       <TabBar space="24">
-        <Background image="rectangle_tabbar_bg.png" color="#2729303F">
+        <Background image="rectangle_tabbar_bg.png" color="#2729306A">
           <Border top="56" bottom="56" left="56" right="56"/>
         </Background>
         <CloseButton image="rectangle_tab_close.png" color="#FFFFFFFF">

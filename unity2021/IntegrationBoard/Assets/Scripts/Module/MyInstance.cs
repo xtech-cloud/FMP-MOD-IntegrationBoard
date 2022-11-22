@@ -234,6 +234,9 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 Color color;
                 if (ColorUtility.TryParseHtmlString(style_.panelBackground.color, out color))
                     image.color = color;
+                image = uiReference_.tfPanel.Find("bg").GetComponent<Image>();
+                image.sprite = sprite;
+                image.color = color;
             }, () =>
             {
 
@@ -250,6 +253,9 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 Color color;
                 if (ColorUtility.TryParseHtmlString(style_.titleBarBackground.color, out color))
                     image.color = color;
+                image = uiReference_.tfTitleBar.Find("bg").GetComponent<Image>();
+                image.sprite = sprite;
+                image.color = color;
             }, () =>
             {
 
@@ -280,6 +286,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 Color color;
                 if (ColorUtility.TryParseHtmlString(style_.tabBar.background.color, out color))
                     image.color = color;
+
+                image = uiReference_.tfTabBar.Find("bg").GetComponent<Image>();
+                image.sprite = sprite;
+                image.color = color;
             }, () =>
             {
 
