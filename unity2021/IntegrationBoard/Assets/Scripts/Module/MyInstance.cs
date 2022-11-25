@@ -110,7 +110,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             uiReference_.frameDescription = rootUI.transform.Find("Board/Panel/__home__/frameDescription");
             uiReference_.btnTopicSwitch = rootUI.transform.Find("Board/Panel/__home__/frameTopic/btnSwitch").GetComponent<Button>();
             uiReference_.btnDescriptionSwitch = rootUI.transform.Find("Board/Panel/__home__/frameDescription/btnSwitch").GetComponent<Button>();
-            uiReference_.imgPicture = rootUI.transform.Find("Board/Panel/__home__/imgPicture").GetComponent<RawImage>();
+            uiReference_.imgPicture = rootUI.transform.Find("Board/Panel/__home__/svPicture/Viewport/Content").GetComponent<RawImage>();
             uiReference_.tgLike = rootUI.transform.Find("Board/Panel/__home__/tgLike").GetComponent<Toggle>();
             uiReference_.tgTabTemplate = rootUI.transform.Find("Board/TabBar/tgTemplate").GetComponent<Toggle>();
             uiReference_.tgTabTemplate.gameObject.SetActive(false);
