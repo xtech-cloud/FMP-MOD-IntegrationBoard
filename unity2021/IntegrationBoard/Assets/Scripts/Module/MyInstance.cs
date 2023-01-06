@@ -543,6 +543,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 signalAddLike_.Emit(null);
                 uiReference_.tgLike.interactable = true;
                 uiReference_.toggleTabS.First().isOn = true;
+                // 刷新所有tab对应的页面
                 uiReference_.toggleTabS.ForEach((_toggle) =>
                 {
                     bool visible = false;
@@ -563,6 +564,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                                         variableS["{{uid}}"] = this.uid;
                                         // assloud中的相对路径
                                         variableS["{{uri}}"] = string.Format("{0}/{1}", _content.foreign_bundle_uuid, contentKV_value);
+                                        // content的路径，bundle_uuid/content_uuid
+                                        variableS["{{content_path}}"] = string.Format("{0}/{1}", _content.foreign_bundle_uuid, _content.Uuid);
                                         publishSubject(pageSlot.refreshSubject, variableS);
                                     }
                                 }
