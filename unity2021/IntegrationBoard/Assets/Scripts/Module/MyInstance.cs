@@ -9,7 +9,6 @@ using Newtonsoft.Json;
 using System.Linq;
 using System;
 using System.Collections;
-using UnityEngine.Rendering;
 
 namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 {
@@ -658,7 +657,9 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                         {
                             Dictionary<string, object> variableS = new Dictionary<string, object>();
                             variableS["{{uid}}"] = this.uid;
-                            variableS["{{page_slot}}"] = pageClone;
+                            variableS["{{ui_slot}}"] = pageClone;
+                            //TODO use offset
+                            variableS["{{world_slot}}"] = rootWorld;
                             publishSubject(pageSlot.inlaySubject, variableS);
                             break;
                         }

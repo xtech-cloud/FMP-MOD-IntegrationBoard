@@ -51,7 +51,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
             instance.preloadsRepetition = new Dictionary<string, object>(preloads_);
             instances[_uid] = instance;
-            instance.InstantiateUI(instanceUI);
+
+            // 实例化ui
+            Transform parentUi = instanceUI.transform.parent;
+            instance.InstantiateUI(instanceUI, parentUi);
             instance.themeObjectsPool.Prepare();
             instance.HandleCreated();
             // 动态注册直系的MVCS
