@@ -55,8 +55,13 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             // 实例化ui
             Transform parentUi = instanceUI.transform.parent;
             instance.InstantiateUI(instanceUI, parentUi);
+            // 实例化world
+            Transform parentWorld = instanceWorld.transform.parent;
+            instance.InstantiateWorld(instanceWorld, parentWorld);
+
             instance.themeObjectsPool.Prepare();
             instance.HandleCreated();
+
             // 动态注册直系的MVCS
             entry_.DynamicRegister(_uid, logger_);
             instance.SetupBridges();
