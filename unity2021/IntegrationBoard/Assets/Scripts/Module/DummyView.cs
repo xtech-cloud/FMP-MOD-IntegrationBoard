@@ -76,6 +76,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             string uid = "";
             string style = "";
             string source = "";
+            string uiSlot = "";
             string uri = "";
             float delay = 0f;
             float position_x = 0f;
@@ -90,6 +91,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 delay = (float)data["delay"];
                 position_x = (float)data["position_x"];
                 position_y = (float)data["position_y"];
+                if (data.ContainsKey("uiSlot"))
+                    uiSlot = (string)data["uiSlot"];
             }
             catch (Exception ex)
             {
@@ -97,7 +100,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 return;
             }
 
-            runtime.DirectOpenInstanceAsync(uid, style, source, uri, delay, position_x, position_y);
+            runtime.DirectOpenInstanceAsync(uid, style, source, uri, delay, position_x, position_y, uiSlot);
         }
 
         private void handleDirectClose(LibMVCS.Model.Status _status, object _data)

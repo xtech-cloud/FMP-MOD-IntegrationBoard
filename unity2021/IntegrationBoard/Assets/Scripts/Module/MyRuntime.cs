@@ -19,9 +19,9 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         {
         }
 
-        public void DirectOpenInstanceAsync(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY)
+        public void DirectOpenInstanceAsync(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY, string _uiSlot)
         {
-            mono_.StartCoroutine(directOpenInstanceAsync(_uid, _style, _source, _uri, _delay, _positionX, _positionY));
+            mono_.StartCoroutine(directOpenInstanceAsync(_uid, _style, _source, _uri, _delay, _positionX, _positionY, _uiSlot));
         }
 
         public void DirectCloseInstanceAsync(string _uid, float _delay)
@@ -29,9 +29,9 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             mono_.StartCoroutine(directCloseInstanceAsync(_uid, _delay));
         }
 
-        private IEnumerator directOpenInstanceAsync(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY)
+        private IEnumerator directOpenInstanceAsync(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY, string _uiSlot)
         {
-            logger_.Debug("directopen instance of {0}, uid is {1}, style is {2}", MyEntryBase.ModuleName, _uid, _style);
+            logger_.Debug("directopen instance of {0}, uid is {1}, style is {2}, uiSlot is {3}", MyEntryBase.ModuleName, _uid, _style, _uiSlot);
             // 延时一帧执行，在发布消息时不能动态注册
             yield return new WaitForEndOfFrame();
 
@@ -54,6 +54,15 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
             // 实例化ui
             Transform parentUi = instanceUI.transform.parent;
+            if (!string.IsNullOrEmpty(_uiSlot))
+            {
+                parentUi = GameObject.Find(_uiSlot).transform;
+                if (null == parentUi)
+                {
+                    logger_.Error("uiSlot {0} not found", _uiSlot);
+                    parentUi = instanceUI.transform.parent;
+                }
+            }
             instance.InstantiateUI(instanceUI, parentUi);
             // 实例化world
             Transform parentWorld = instanceWorld.transform.parent;

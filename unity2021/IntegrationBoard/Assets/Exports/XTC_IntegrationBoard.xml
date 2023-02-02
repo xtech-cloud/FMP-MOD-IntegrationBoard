@@ -5,6 +5,11 @@
       slot: ui根节点在主Canvas中的挂载路径
     -->
   <UI visible="true" slot="[root]"/>
+  <!-- World
+      visible: 预加载完成后是否显示
+      slot: 3D世界根节点在主世界中的挂载路径
+    -->
+  <World visible="true" slot="[root]"/>
   <!-- 远程过程调用
       address: 地址
     -->
@@ -178,9 +183,11 @@
   <!-- 预创建的实例列表
       uid: 实例的唯一ID
       style: 使用的样式名
+      uiSlot: ui的挂载槽路径，空值时使用UI.slot
+      worldSlot: 3D世界的挂载槽路径，空值时使用World.slot
     -->
   <Instances>
-    <Instance uid="default" style="rectangle"/>
+    <Instance uid="default" style="rectangle" uiSlot="" worldSlot=""/>
   </Instances>
   <!-- 预加载 -->
   <Preload>

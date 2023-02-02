@@ -111,7 +111,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             modelDummy_.Publish(MySubjectBase.Delete, data);
         }
 
-        public void __DebugDirectOpen(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY)
+        public void __DebugDirectOpen(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY, string _uiSlot)
         {
             var data = new Dictionary<string, object>();
             data["uid"] = _uid;
@@ -121,6 +121,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             data["delay"] = _delay;
             data["position_x"] = _positionX;
             data["position_y"] = _positionY;
+            data["uiSlot"] = _uiSlot;
             modelDummy_.Publish(MySubject.DirectOpen, data);
         }
 
