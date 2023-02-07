@@ -458,6 +458,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             uiReference_.tfImageToolBox.Find("btnZoomIn").GetComponent<Button>().onClick.AddListener(() =>
             {
                 pictureScale_ += 0.2f;
+                if (style_.coverPicture.maxZoomIn > 0 & pictureScale_ > style_.coverPicture.maxZoomIn)
+                    pictureScale_ = style_.coverPicture.maxZoomIn;
                 uiReference_.imgPicture.rectTransform.sizeDelta = pictureFitedSize_ * pictureScale_;
             });
             uiReference_.tfImageToolBox.Find("btnZoomOut").GetComponent<Button>().onClick.AddListener(() =>

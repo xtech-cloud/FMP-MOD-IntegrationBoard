@@ -106,6 +106,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         {
             [XmlAttribute("fitmode")]
             public string fitmode { get; set; } = "none";
+            [XmlAttribute("maxZoomIn")]
+            public float maxZoomIn { get; set; } = 0f;
         }
 
         public class SizeRange

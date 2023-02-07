@@ -51,6 +51,7 @@
       Style.TabBar.TabButtons:  标签按钮列表
       Style.TabBar.TabButton.contentKey:  对应content的meta.json的kvS中的键，如果存在则显示。“_”表示不与content对应，始终显示。
       Style.CoverPicture.fitmode: 匹配模式，可选值为（none:使用原图大小，zoomout:比容器大时缩小为容器大小，zoomin:比容器小时放大为容器大小，zoom:同时使用zoomin和zoomout）
+      Style.CoverPicture.maxZoomIn: 最大放大倍数，0表示不限制
     -->
   <Styles>
     <Style name="rectangle" width="880" height="740">
@@ -177,7 +178,7 @@
           </TabButton>
         </TabButtons>
       </TabBar>
-      <CoverPicture fitmode="zoom"/>
+      <CoverPicture fitmode="zoom" maxZoomIn="3.0"/>
     </Style>
   </Styles>
   <!-- 预创建的实例列表
