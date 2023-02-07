@@ -58,13 +58,13 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </summary>
         public AlignGrid stickedAlignGrid { get; private set; }
         /// <summary>
-        /// 吸附后的x坐标
+        /// 矫正后的x坐标
         /// </summary>
-        public float stickedX { get; private set; }
+        public float adjustedX { get; private set; }
         /// <summary>
-        /// 吸附后的y坐标
+        /// 矫正后的y坐标
         /// </summary>
-        public float stickedY { get; private set; }
+        public float adjustedY { get; private set; }
 
         private UiReference uiReference_ = new UiReference();
         private ContentReader contentReader_ = null;
@@ -128,6 +128,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 var instanceSize = rootUI.GetComponent<RectTransform>().rect.size;
                 GenerateAlignGrid(instanceSize);
             }
+            //this.AdjustPosition();
         }
 
         /// <summary>
@@ -191,17 +192,17 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         }
 
         /// <summary>
-        /// 吸附对齐网格
+        /// 矫正坐标
         /// </summary>
         /// <param name="_x">x坐标</param>
         /// <param name="_y">y坐标</param>
-        /// <param name="_stickedX">吸附后的x坐标</param>
-        /// <param name="_stickedY">吸附后的y坐标</param>
-        public void StickAlignGrid(float _x, float _y)
+        /// <param name="_viewportSize">ui挂载点</param>
+        public void AdjustPosition(float _x, float _y, Vector2 _viewportSize)
         {
-            stickedX = _x;
-            stickedY = _y;
+            adjustedX = _x;
+            adjustedY = _y;
             Vector2 position = new Vector2(_x, _y);
+            // 吸附矫正
             float minDistance = float.MaxValue;
             foreach (var grid in alignGridS_)
             {
@@ -210,12 +211,21 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 {
                     minDistance = offset;
                     if (style_.alignGrid.stickH)
-                        stickedX = grid.Center.x;
+                        adjustedX = grid.Center.x;
                     if (style_.alignGrid.stickV)
-                        stickedY = grid.Center.y;
+                        adjustedY = grid.Center.y;
                     stickedAlignGrid = grid;
                 }
             }
+            // 边缘矫正
+            if (adjustedX - style_.width / 2 < -_viewportSize.x / 2)
+                adjustedX = -_viewportSize.x / 2 + style_.width / 2;
+            else if (adjustedX + style_.width / 2 > _viewportSize.x / 2)
+                adjustedX = _viewportSize.x / 2 - style_.width / 2;
+            if (adjustedY - style_.height / 2 < -_viewportSize.y / 2)
+                adjustedY = -_viewportSize.y / 2 + style_.height / 2;
+            else if (adjustedY + style_.height / 2 > _viewportSize.y / 2)
+                adjustedY = _viewportSize.y / 2 - style_.height / 2;
         }
 
         private void applyStyle()

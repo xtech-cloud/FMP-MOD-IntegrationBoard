@@ -41,18 +41,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 yield break;
             }
 
-            instance = new MyInstance(_uid, _style, config_, catalog_, logger_, settings_, entry_, mono_, rootAttachment);
-            instance.GenerateAlignGrid(rootUI.GetComponent<RectTransform>().rect.size);
-            // 获取吸附后的坐标
-            instance.StickAlignGrid(_positionX, _positionY);
-            // 检测吸附后的坐标是否和其他已存在的实例产生交集
-            if (detectCross(instance))
-                yield break;
-
-            instance.preloadsRepetition = new Dictionary<string, object>(preloads_);
-            instances[_uid] = instance;
-
-            // 实例化ui
+            // 获取ui挂载点
             Transform parentUi = instanceUI.transform.parent;
             if (!string.IsNullOrEmpty(_uiSlot))
             {
@@ -63,9 +52,27 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     parentUi = instanceUI.transform.parent;
                 }
             }
+            // 获取世界挂载点
+            Transform parentWorld = instanceWorld.transform.parent;
+
+            instance = new MyInstance(_uid, _style, config_, catalog_, logger_, settings_, entry_, mono_, rootAttachment);
+            Vector2 viewportSize = parentUi.GetComponent<RectTransform>().rect.size;
+            instance.GenerateAlignGrid(viewportSize);
+            // 矫正坐标
+            instance.AdjustPosition(_positionX, _positionY, viewportSize);
+            // 检测吸附后的坐标是否和其他已存在的实例产生交集
+            if (detectCross(instance))
+            {
+                logger_.Debug("detectCross == true, so ignore open");
+                yield break;
+            }
+
+            instance.preloadsRepetition = new Dictionary<string, object>(preloads_);
+            instances[_uid] = instance;
+
+            // 实例化ui
             instance.InstantiateUI(instanceUI, parentUi);
             // 实例化world
-            Transform parentWorld = instanceWorld.transform.parent;
             instance.InstantiateWorld(instanceWorld, parentWorld);
 
             instance.themeObjectsPool.Prepare();
@@ -76,7 +83,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             instance.SetupBridges();
             yield return new WaitForSeconds(_delay);
             instance.contentObjectsPool.Prepare();
-            instance.rootUI.transform.Find("Board").GetComponent<RectTransform>().anchoredPosition = new Vector2(instance.stickedX, instance.stickedY);
+            instance.rootUI.transform.Find("Board").GetComponent<RectTransform>().anchoredPosition = new Vector2(instance.adjustedX, instance.adjustedY);
             instance.HandleOpened(_source, _uri);
         }
 
@@ -104,6 +111,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         private bool detectCross(MyInstance _instance)
         {
             bool hasCross = false;
+            // 遍历所有实例
+            //TODO 只检测同深度值(depth)的实例
             foreach (var instance in instances.Values)
             {
                 if (null == instance.stickedAlignGrid)
