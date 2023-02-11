@@ -19,39 +19,44 @@
   -->
   <!-- 样式列表
       name: 名称
-      Style.AlignGrid: 对齐网格，将屏幕划分为n行xm列的网格，可控制面板吸附在最近的网格的中心位置
-      Style.AlignGrid.visible: 是否可见
-      Style.AlignGrid.row: 行数
-      Style.AlignGrid.column: 列数
-      Style.AlignGrid.stickH: 水平吸附
-      Style.AlignGrid.stickV: 垂直吸附
-      Style.TitleBarBackground: 首页标题栏背景
-      Style.TitleBarBackground.image: 位于theme文件夹中的图片
-      Style.TitleBarBackground.color: 图片的叠加颜色
-      Style.TitleBarBackground.Border: 图片的九宫格边界
-      Style.PanelBackground: 首页面板背景
-      Style.PanelBackground.image: 位于theme文件夹中的图片
-      Style.PanelBackground.color: 图片的叠加颜色
-      Style.PanelBackground.Border: 图片的九宫格边界
-      Style.LikeBackground: 点赞背景
-      Style.LikeBackground.image: 位于theme文件夹中的图片
-      Style.LikeBackground.color: 图片的叠加颜色
-      Style.LikeBackground.Border: 图片的九宫格边界
-      Style.TopicBackground: 标语背景
-      Style.TopicBackground.image: 位于theme文件夹中的图片
-      Style.TopicBackground.color: 图片的叠加颜色
-      Style.TopicBackground.Border: 图片的九宫格边界
-      Style.DescriptionBackground: 描述背景
-      Style.DescriptionBackground.image: 位于theme文件夹中的图片
-      Style.DescriptionBackground.color: 图片的叠加颜色
-      Style.DescriptionBackground.Border: 图片的九宫格边界
-      Style.TabBar: 标签栏
-      Style.TabBar.space:  标签间的间隔
-      Style.TabBar.Background: 标签栏背景
-      Style.TabBar.TabButtons:  标签按钮列表
-      Style.TabBar.TabButton.contentKey:  对应content的meta.json的kvS中的键，如果存在值则显示。“_”表示不与content对应，始终显示。
-      Style.CoverPicture.fitmode: 匹配模式，可选值为（none:使用原图大小，zoomout:比容器大时缩小为容器大小，zoomin:比容器小时放大为容器大小，zoom:同时使用zoomin和zoomout）
-      Style.CoverPicture.maxZoomIn: 最大放大倍数，0表示不限制
+      AlignGrid: 对齐网格，将屏幕划分为n行xm列的网格，可控制面板吸附在最近的网格的中心位置
+      AlignGrid.visible: 是否可见
+      AlignGrid.row: 行数
+      AlignGrid.column: 列数
+      AlignGrid.stickH: 水平吸附
+      AlignGrid.stickV: 垂直吸附
+      TitleBarBackground: 首页标题栏背景
+      TitleBarBackground.image: 位于theme文件夹中的图片
+      TitleBarBackground.color: 图片的叠加颜色
+      TitleBarBackground.Border: 图片的九宫格边界
+      PanelBackground: 首页面板背景
+      PanelBackground.image: 位于theme文件夹中的图片
+      PanelBackground.color: 图片的叠加颜色
+      PanelBackground.Border: 图片的九宫格边界
+      LikeBackground: 点赞背景
+      LikeBackground.image: 位于theme文件夹中的图片
+      LikeBackground.color: 图片的叠加颜色
+      LikeBackground.Border: 图片的九宫格边界
+      TopicBackground: 标语背景
+      TopicBackground.image: 位于theme文件夹中的图片
+      TopicBackground.color: 图片的叠加颜色
+      TopicBackground.Border: 图片的九宫格边界
+      DescriptionBackground: 描述背景
+      DescriptionBackground.image: 位于theme文件夹中的图片
+      DescriptionBackground.color: 图片的叠加颜色
+      DescriptionBackground.Border: 图片的九宫格边界
+      TabBar: 标签栏
+      TabBar.space:  标签间的间隔
+      TabBar.Background: 标签栏背景
+      TabBar.TabButtons:  标签按钮列表
+      TabBar.TabButton.contentKey:  对应content的meta.json的kvS中的键，如果存在值则显示。“_”表示不与content对应，始终显示。
+      CoverPicture.fitmode: 匹配模式，可选值为（none:使用原图大小，zoomout:比容器大时缩小为容器大小，zoomin:比容器小时放大为容器大小，zoom:同时使用zoomin和zoomout）
+      CoverPicture.maxZoomIn: 最大放大倍数，0表示不限制
+      PageSlot.page: 页面的名称
+      PageSlot.InlaySubject: 页面嵌入实体时发布的消息
+      PageSlot.RefreshSubject: 页面刷新时发布的消息
+      TabBar.CloseButton.Subjects: 关闭面板时发布的消息
+      TabBar.TabButton.Subjects: 标签栏的标签激活时发布的消息
     -->
   <Styles>
     <Style name="rectangle" width="880" height="740">
