@@ -77,11 +77,17 @@ public class Root : RootBase
             entry_.__DebugDirectOpen(uid, "rectangle", "assloud://", "XTC.IntegrationBoard/1", 0, Random.Range(-Screen.width / 2, Screen.width / 2), Random.Range(-Screen.height / 2, Screen.height / 2), "MainCanvas");
         }
 
-        if (GUI.Button(new Rect(0, 210, 60, 30), "DirectClose"))
+        if (GUI.Button(new Rect(0, 210, 60, 30), "Refresh"))
+        {
+            entry_.__DebugRefresh("test", "assloud://", "XTC.IntegrationBoard", "2");
+        }
+
+        if (GUI.Button(new Rect(0, 240, 60, 30), "DirectClose"))
         {
             foreach (var uid in directOpenInstanceS_)
                 entry_.__DebugDirectClose(uid, 0);
         }
+
     }
 }
 

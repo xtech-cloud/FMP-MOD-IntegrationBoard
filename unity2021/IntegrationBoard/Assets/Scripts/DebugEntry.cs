@@ -39,8 +39,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             var data = new Dictionary<string, object>();
             data["uid"] = _uid;
             data["style"] = _style;
-            data["uiSlot"] = "[root]";
-            data["worldSlot"] = "[root]";
+            data["uiSlot"] = "MainCanvas/[root]";
+            data["worldSlot"] = "MainWorld/[root]";
             modelDummy_.Publish(MySubjectBase.Create, data);
         }
 
@@ -131,6 +131,16 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             data["uid"] = _uid;
             data["delay"] = _delay;
             modelDummy_.Publish(MySubject.DirectClose, data);
+        }
+
+        public void __DebugRefresh(string _uid, string _source, string _bundleUUID, string _contentUUID)
+        {
+            var data = new Dictionary<string, object>();
+            data["uid"] = _uid;
+            data["source"] = _source;
+            data["bundle_uuid"] = _bundleUUID;
+            data["content_uuid"] = _contentUUID;
+            modelDummy_.Publish(MySubject.Refresh, data);
         }
     }
 }

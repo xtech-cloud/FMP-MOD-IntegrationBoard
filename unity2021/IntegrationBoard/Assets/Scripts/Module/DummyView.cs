@@ -24,6 +24,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             addSubscriber(MySubject.ActivatePage, handleActivatePage);
             addSubscriber(MySubject.DirectOpen, handleDirectOpen);
             addSubscriber(MySubject.DirectClose, handleDirectClose);
+            addSubscriber(MySubject.Refresh, handleRefresh);
         }
 
         private void handleActivatePage(LibMVCS.Model.Status _status, object _data)
@@ -121,6 +122,37 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             }
 
             runtime.DirectCloseInstanceAsync(uid, delay);
+        }
+
+        private void handleRefresh(LibMVCS.Model.Status _status, object _data)
+        {
+            getLogger().Debug("handle refresh {0} with data: {1}", MyEntryBase.ModuleName, JsonConvert.SerializeObject(_data));
+            string uid = "";
+            string source = "";
+            string bundle_uuid = "";
+            string content_uuid = "";
+            try
+            {
+                Dictionary<string, object> data = _data as Dictionary<string, object>;
+                uid = (string)data["uid"];
+                source = (string)data["source"];
+                bundle_uuid = (string)data["bundle_uuid"];
+                content_uuid = (string)data["content_uuid"];
+            }
+            catch (Exception ex)
+            {
+                getLogger().Exception(ex);
+                return;
+            }
+
+            MyInstance instance;
+            if (!runtime.instances.TryGetValue(uid, out instance))
+            {
+                getLogger().Error("instance not found");
+                return;
+            }
+
+            instance.RefreshContent(source, string.Format("{0}/{1}", bundle_uuid, content_uuid));
         }
     }
 }

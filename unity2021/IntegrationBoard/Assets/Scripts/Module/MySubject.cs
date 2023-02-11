@@ -23,5 +23,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </summary>
         /// <see cref="https://github.com/xtech-cloud/fmp-doc/blob/main/module-hub/xtc_integrationboard/README.md"/>
         public const string DirectClose = "/XTC/IntegrationBoard/DirectClose";
+
+        /// <summary>
+        /// Ë¢ÐÂ
+        /// </summary>
+        public const string Refresh = "/XTC/IntegrationBoard/Refresh";
     }
 }

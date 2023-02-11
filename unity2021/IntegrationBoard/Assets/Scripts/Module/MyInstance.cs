@@ -160,6 +160,11 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             rootUI.gameObject.SetActive(false);
         }
 
+        public void RefreshContent(string _source, string _uri)
+        {
+            refreshContent(_source, _uri);
+        }
+
         /// <summary>
         /// 生成对齐网格
         /// </summary>
@@ -573,9 +578,13 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                                     {
                                         Dictionary<string, object> variableS = new Dictionary<string, object>();
                                         variableS["{{uid}}"] = this.uid;
-                                        // assloud中的相对路径
+                                        variableS["{{bundle_uuid}}"] = _content.foreign_bundle_uuid;
+                                        variableS["{{content_uuid}}"] = _content.Uuid;
+                                        variableS["{{content_kv_key}}"] = tab.contentKey;
+                                        variableS["{{content_kv_value}}"] = contentKV_value;
+                                        //[弃用的] assloud中的相对路径
                                         variableS["{{uri}}"] = string.Format("{0}/{1}", _content.foreign_bundle_uuid, contentKV_value);
-                                        // content的路径，bundle_uuid/content_uuid
+                                        //[弃用的] content的路径，bundle_uuid/content_uuid
                                         variableS["{{content_path}}"] = string.Format("{0}/{1}", _content.foreign_bundle_uuid, _content.Uuid);
                                         publishSubject(pageSlot.refreshSubject, variableS);
                                     }
