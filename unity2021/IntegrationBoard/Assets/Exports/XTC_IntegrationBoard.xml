@@ -41,10 +41,18 @@
       TopicBackground.image: 位于theme文件夹中的图片
       TopicBackground.color: 图片的叠加颜色
       TopicBackground.Border: 图片的九宫格边界
+      TopicSwitchIcon.image: 标语切换按钮的图片
       DescriptionBackground: 描述背景
       DescriptionBackground.image: 位于theme文件夹中的图片
       DescriptionBackground.color: 图片的叠加颜色
       DescriptionBackground.Border: 图片的九宫格边界
+      DescriptionSwitchIcon.image: 描述切换按钮的图片
+      LikedIcon.image: 已点赞按钮的图片
+      UnlikedIcon.image: 未点赞按钮的图片
+      SizeRange.topicWidth: 标语框的宽度
+      SizeRange.descriptionWidth: 描述框的宽度
+      SizeRange.descriptionMaxHeight: 描述框的最大高度
+      ImageToolBox: 首页封面图工具箱
       TabBar: 标签栏
       TabBar.space:  标签间的间隔
       TabBar.Background: 标签栏背景
@@ -85,7 +93,7 @@
       <UnlikedIcon image="rectangle_icon_unliked.png">
         <Anchor horizontal="left" vertical="center" marginH="12" marginV="0" width="20" height="20"/>
       </UnlikedIcon>
-      <SizeRange descriptionMaxHeight="110"/>
+      <SizeRange descriptionMaxHeight="110" topicWidth="400" descriptionWidth="400"/>
       <ImageToolBox image="rectangle_button.png" color="#5B656F88">
         <Border top="16" bottom="16" left="16" right="16"/>
         <Anchor horizontal="right" vertical="bottom" marginH="36" marginV="24" height="48"/>

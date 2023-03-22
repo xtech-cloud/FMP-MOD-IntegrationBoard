@@ -112,6 +112,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
         public class SizeRange
         {
+            [XmlAttribute("topicWidth")]
+            public int topicWidth { get; set; } = 400;
+            [XmlAttribute("descriptionWidth")]
+            public int descriptionWidth { get; set; } = 400;
             [XmlAttribute("descriptionMaxHeight")]
             public int descriptionMaxHeight { get; set; } = 0;
         }

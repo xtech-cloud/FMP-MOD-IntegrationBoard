@@ -309,6 +309,9 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
             });
 
+
+            var rtTopic = uiReference_.frameTopic.GetComponent<RectTransform>();
+            rtTopic.sizeDelta = new Vector2(style_.sizeRange.topicWidth, rtTopic.sizeDelta.y);
             // 加载标语面板背景
             loadTextureFromTheme(style_.topicBackground.image, (_texture) =>
             {
@@ -333,6 +336,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
             });
 
+            var rtDescription = uiReference_.frameDescription.GetComponent<RectTransform>();
+            rtDescription.sizeDelta = new Vector2(style_.sizeRange.descriptionWidth, rtTopic.sizeDelta.y);
             // 加载描述面板背景
             loadTextureFromTheme(style_.descriptionBackground.image, (_texture) =>
             {
@@ -343,6 +348,15 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 Color color;
                 if (ColorUtility.TryParseHtmlString(style_.descriptionBackground.color, out color))
                     image.color = color;
+            }, () =>
+            {
+
+            });
+
+            // 加载描述切换图标
+            loadTextureFromTheme(style_.descriptionSwitchIcon.image, (_texture) =>
+            {
+                uiReference_.btnDescriptionSwitch.GetComponent<RawImage>().texture = _texture;
             }, () =>
             {
 
@@ -370,14 +384,6 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
             });
 
-            // 加载描述切换图标
-            loadTextureFromTheme(style_.descriptionSwitchIcon.image, (_texture) =>
-            {
-                uiReference_.btnDescriptionSwitch.GetComponent<RawImage>().texture = _texture;
-            }, () =>
-            {
-
-            });
 
             // 加载关闭按钮图标
             loadTextureFromTheme(style_.tabBar.closeButton.image, (_texture) =>
