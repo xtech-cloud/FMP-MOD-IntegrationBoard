@@ -364,9 +364,20 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             });
 
             // 加载标语切换图标
-            loadTextureFromTheme(style_.topicSwitchIcon.image, (_texture) =>
+            loadTextureFromTheme(style_.topicSwitchButton.background, (_texture) =>
             {
-                uiReference_.btnTopicSwitch.GetComponent<RawImage>().texture = _texture;
+                Vector4 border = new Vector4(style_.topicSwitchButton.border.left, style_.topicSwitchButton.border.bottom, style_.topicSwitchButton.border.right, style_.topicSwitchButton.border.top);
+                Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                uiReference_.btnTopicSwitch.GetComponent<Image>().sprite = sprite;
+            }, () =>
+            {
+
+            });
+            loadTextureFromTheme(style_.topicSwitchButton.icon, (_texture) =>
+            {
+                var rtIcon = uiReference_.btnTopicSwitch.transform.Find("icon").GetComponent<RectTransform>();
+                rtIcon.sizeDelta = new Vector2(style_.topicSwitchButton.iconSize, style_.topicSwitchButton.iconSize);
+                rtIcon.GetComponent<RawImage>().texture = _texture;
             }, () =>
             {
 
@@ -390,9 +401,20 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             });
 
             // 加载描述切换图标
-            loadTextureFromTheme(style_.descriptionSwitchIcon.image, (_texture) =>
+            loadTextureFromTheme(style_.descriptionSwitchButton.background, (_texture) =>
             {
-                uiReference_.btnDescriptionSwitch.GetComponent<RawImage>().texture = _texture;
+                Vector4 border = new Vector4(style_.descriptionSwitchButton.border.left, style_.descriptionSwitchButton.border.bottom, style_.descriptionSwitchButton.border.right, style_.descriptionSwitchButton.border.top);
+                Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                uiReference_.btnDescriptionSwitch.GetComponent<Image>().sprite = sprite;
+            }, () =>
+            {
+
+            });
+            loadTextureFromTheme(style_.descriptionSwitchButton.icon, (_texture) =>
+            {
+                var rtIcon = uiReference_.btnDescriptionSwitch.transform.Find("icon").GetComponent<RectTransform>();
+                rtIcon.sizeDelta = new Vector2(style_.descriptionSwitchButton.iconSize, style_.descriptionSwitchButton.iconSize);
+                rtIcon.GetComponent<RawImage>().texture = _texture;
             }, () =>
             {
 

@@ -120,6 +120,18 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public int descriptionMaxHeight { get; set; } = 0;
         }
 
+        public class SwitchButton
+        {
+            [XmlAttribute("background")]
+            public string background { get; set; } = "";
+            [XmlElement("Border")]
+            public Border border { get; set; } = new Border();
+            [XmlAttribute("icon")]
+            public string icon { get; set; } = "";
+            [XmlAttribute("iconSize")]
+            public int iconSize { get; set; } = 16;
+        }
+
         public class Style
         {
             [XmlAttribute("name")]
@@ -144,10 +156,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public VisualUiElement likeBackground { get; set; } = new VisualUiElement();
             [XmlElement("ToolBoxBackground")]
             public VisualUiElement toolBoxBackground { get; set; } = new VisualUiElement();
-            [XmlElement("TopicSwitchIcon")]
-            public UiElement topicSwitchIcon { get; set; } = new UiElement();
-            [XmlElement("DescriptionSwitchIcon")]
-            public UiElement descriptionSwitchIcon { get; set; } = new UiElement();
+            [XmlElement("TopicSwitchButton")]
+            public SwitchButton topicSwitchButton { get; set; } = new SwitchButton();
+            [XmlElement("DescriptionSwitchButton")]
+            public SwitchButton descriptionSwitchButton { get; set; } = new SwitchButton();
             [XmlElement("LikedIcon")]
             public UiElement likedIcon { get; set; } = new UiElement();
             [XmlElement("UnlikedIcon")]
