@@ -85,6 +85,14 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             instance.contentObjectsPool.Prepare();
             instance.rootUI.transform.Find("Board").GetComponent<RectTransform>().anchoredPosition = new Vector2(instance.adjustedX, instance.adjustedY);
             instance.HandleOpened(_source, _uri);
+            // 覆盖自动关闭超时事件
+            instance.onAutoCloseTimeout = () =>
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                parameters["uid"] = _uid;
+                parameters["delay"] = 0f;
+                entry_.getDummyModel().Publish(MySubject.DirectClose, parameters);
+            };
         }
 
         private IEnumerator directCloseInstanceAsync(string _uid, float _delay)

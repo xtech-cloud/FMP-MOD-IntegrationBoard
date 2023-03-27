@@ -19,6 +19,7 @@
   -->
   <!-- 样式列表
       name: 名称
+      autoCloseTimeout: 自动关闭的超时时间，0值时不启动此功能
       AlignGrid: 对齐网格，将屏幕划分为n行xm列的网格，可控制面板吸附在最近的网格的中心位置
       AlignGrid.visible: 是否可见
       AlignGrid.row: 行数
@@ -67,7 +68,7 @@
       TabBar.TabButton.Subjects: 标签栏的标签激活时发布的消息
     -->
   <Styles>
-    <Style name="rectangle" width="880" height="740">
+    <Style name="rectangle" width="880" height="740" autoCloseTimeout="30">
       <AlignGrid row="1" column="1" stickH="true" stickV="true"/>
       <TitleBarBackground image="rectangle_titlebar_bg.png" color="#3333334C">
         <Border top="56" bottom="56" left="56" right="56"/>

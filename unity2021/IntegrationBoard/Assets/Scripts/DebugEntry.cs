@@ -142,5 +142,12 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             data["content_uuid"] = _contentUUID;
             modelDummy_.Publish(MySubject.Refresh, data);
         }
+
+        public void __DebugResetAutoCloseTimer(string _uid)
+        {
+            var data = new Dictionary<string, object>();
+            data["uid"] = _uid;
+            modelDummy_.Publish(MySubject.ResetAutoCloseTimer, data);
+        }
     }
 }

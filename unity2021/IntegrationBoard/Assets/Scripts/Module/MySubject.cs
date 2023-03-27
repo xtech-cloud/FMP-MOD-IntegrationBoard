@@ -28,5 +28,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// 刷新
         /// </summary>
         public const string Refresh = "/XTC/IntegrationBoard/Refresh";
+
+        /// <summary>
+        /// 重置自动关闭计时器
+        /// </summary>
+        public const string ResetAutoCloseTimer = "/XTC/IntegrationBoard/ResetAutoCloseTimer";
     }
 }

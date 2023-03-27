@@ -128,6 +128,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public int width { get; set; } = 0;
             [XmlAttribute("height")]
             public int height { get; set; } = 0;
+            [XmlAttribute("autoCloseTimeout")]
+            public int autoCloseTimeout { get; set; } = 0;
             [XmlElement("AlignGrid")]
             public AlignGrid alignGrid { get; set; } = new AlignGrid();
             [XmlElement("TitleBarBackground")]

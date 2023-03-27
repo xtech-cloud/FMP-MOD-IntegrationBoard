@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using System.Linq;
 using System;
 using System.Collections;
+using System.IO;
 
 namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 {
@@ -66,6 +67,11 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </summary>
         public float adjustedY { get; private set; }
 
+        /// <summary>
+        /// 自动关闭超时委托，默认为发布Close消息
+        /// </summary>
+        public Action onAutoCloseTimeout;
+
         private UiReference uiReference_ = new UiReference();
         private ContentReader contentReader_ = null;
 
@@ -81,6 +87,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         private string activeContentUri_;
 
         private LibMVCS.Signal signalAddLike_;
+        private Coroutine coroutineAutoClose_;
 
 
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
@@ -150,6 +157,20 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         {
             refreshContent(_source, _uri);
             rootUI.gameObject.SetActive(true);
+
+            onAutoCloseTimeout = () =>
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                parameters["uid"] = uid;
+                parameters["delay"] = 0f;
+                entry_.getDummyModel().Publish(MySubject.Close, parameters);
+            };
+
+            if (style_.autoCloseTimeout > 0)
+            {
+                logger_.Debug("this integrationboard will autoclose after {0} seconds ...", style_.autoCloseTimeout);
+                coroutineAutoClose_ = mono_.StartCoroutine(autoClose());
+            }
         }
 
         /// <summary>
@@ -158,6 +179,11 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         public void HandleClosed()
         {
             rootUI.gameObject.SetActive(false);
+            if (null != coroutineAutoClose_)
+            {
+                mono_.StopCoroutine(coroutineAutoClose_);
+                coroutineAutoClose_ = null;
+            }
         }
 
         public void RefreshContent(string _source, string _uri)
@@ -231,6 +257,16 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 adjustedY = -_viewportSize.y / 2 + style_.height / 2;
             else if (adjustedY + style_.height / 2 > _viewportSize.y / 2)
                 adjustedY = _viewportSize.y / 2 - style_.height / 2;
+        }
+
+        public void ResetAutoCloseTimer()
+        {
+            if (null == coroutineAutoClose_)
+                return;
+
+            logger_.Trace("Reset the timer of autoClose");
+            mono_.StopCoroutine(coroutineAutoClose_);
+            coroutineAutoClose_ = mono_.StartCoroutine(autoClose());
         }
 
         private void applyStyle()
@@ -668,6 +704,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     {
                         publishSubject(subject, variableS);
                     }
+                    ResetAutoCloseTimer();
                 });
                 clone.GetComponent<RectTransform>().sizeDelta = new Vector2(tab.uncheckedWidth, tab.uncheckedHeight);
                 uiReference_.toggleTabS.Add(toggle);
@@ -867,6 +904,16 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             int count;
             status.likeStatusS.TryGetValue(activeContentUri_, out count);
             uiReference_.tgLike.transform.Find("Label").GetComponent<Text>().text = count.ToString();
+        }
+
+        private IEnumerator autoClose()
+        {
+            yield return new WaitForSeconds(style_.autoCloseTimeout);
+            if (null != onAutoCloseTimeout)
+            {
+                onAutoCloseTimeout();
+            }
+            coroutineAutoClose_ = null;
         }
     }
 }

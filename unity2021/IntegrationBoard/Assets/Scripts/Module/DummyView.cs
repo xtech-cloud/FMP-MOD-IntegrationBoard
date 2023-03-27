@@ -25,6 +25,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             addSubscriber(MySubject.DirectOpen, handleDirectOpen);
             addSubscriber(MySubject.DirectClose, handleDirectClose);
             addSubscriber(MySubject.Refresh, handleRefresh);
+            addSubscriber(MySubject.ResetAutoCloseTimer, handleResetAutoCloseTimer);
         }
 
         private void handleActivatePage(LibMVCS.Model.Status _status, object _data)
@@ -153,6 +154,31 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             }
 
             instance.RefreshContent(source, string.Format("{0}/{1}", bundle_uuid, content_uuid));
+        }
+
+        private void handleResetAutoCloseTimer(LibMVCS.Model.Status _status, object _data)
+        {
+            getLogger().Debug("handle ResetAutoCloseTimer {0} with data: {1}", MyEntryBase.ModuleName, JsonConvert.SerializeObject(_data));
+            string uid = "";
+            try
+            {
+                Dictionary<string, object> data = _data as Dictionary<string, object>;
+                uid = (string)data["uid"];
+            }
+            catch (Exception ex)
+            {
+                getLogger().Exception(ex);
+                return;
+            }
+
+            MyInstance instance;
+            if (!runtime.instances.TryGetValue(uid, out instance))
+            {
+                getLogger().Error("instance not found");
+                return;
+            }
+
+            instance.ResetAutoCloseTimer();
         }
     }
 }
