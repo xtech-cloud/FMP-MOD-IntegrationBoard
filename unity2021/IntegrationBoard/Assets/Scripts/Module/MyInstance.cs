@@ -777,7 +777,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     continue;
                 var rt = toggle.GetComponent<RectTransform>();
                 rt.anchoredPosition = new Vector2(lastX + rt.sizeDelta.x / 2, 0);
-                lastX += rt.sizeDelta.x + 24;
+                lastX += rt.sizeDelta.x + style_.tabBar.space;
             }
             rtCloseButton.anchoredPosition = new Vector2(lastX + rtCloseButton.sizeDelta.x / 2, 0);
         }
