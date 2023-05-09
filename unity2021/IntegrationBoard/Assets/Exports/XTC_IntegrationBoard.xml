@@ -66,6 +66,13 @@
       PageSlot.RefreshSubject: 页面刷新时发布的消息
       TabBar.CloseButton.Subjects: 关闭面板时发布的消息
       TabBar.TabButton.Subjects: 标签栏的标签激活时发布的消息
+	  LabelButton.fontSize: 标签的字体大小
+	  LabelButton.fontColor: 标签的字体颜色
+	  LabelButton.height: 标签的高度，宽度自动适配
+	  LabelButton.image: 标签的图片
+      LabelButton.Border: 标签图片的九宫格边界
+      EcentHandler.OnRefresh: 内容刷新事件的处理
+      EcentHandler.OnLike: 点赞刷新事件的处理
     -->
 	<Styles>
 		<Style name="rectangle" width="880" height="740" autoCloseTimeout="30">
@@ -98,6 +105,9 @@
 			<UnlikedIcon image="rectangle_icon_unliked.png">
 				<Anchor horizontal="left" vertical="center" marginH="12" marginV="0" width="20" height="20"/>
 			</UnlikedIcon>
+			<LabelButton fontSize="12" fontColor="#FFFFFFFF" height="24" image="label.png">
+				<Border top="12" bottom="12" left="12" right="12"/>
+			</LabelButton>
 			<SizeRange descriptionMaxHeight="110" topicWidth="400" descriptionWidth="400"/>
 			<ImageToolBox image="rectangle_button.png" color="#5B656F88">
 				<Border top="16" bottom="16" left="16" right="16"/>
@@ -197,6 +207,28 @@
 				</TabButtons>
 			</TabBar>
 			<CoverPicture fitmode="zoom" maxZoomIn="3.0"/>
+			<EventHandler>
+				<OnRefresh>
+					<Subjects>
+						<Subject message="/XTC/Analytics/TrackerRecord">
+							<Parameters>
+								<Parameter key="eventID" value="/XTC/IntegerationBoard/Open" type="string"/>
+								<Parameter key="eventParameter" value='{"uid":"{{uid}}"}' type="string"/>
+							</Parameters>
+						</Subject>
+					</Subjects>
+				</OnRefresh>
+				<OnLike>
+					<Subjects>
+						<Subject message="/XTC/Analytics/TrackerRecord">
+							<Parameters>
+								<Parameter key="eventID" value="/XTC/IntegerationBoard/Like" type="string"/>
+								<Parameter key="eventParameter" value='{"uid":"{{uid}}"}' type="string"/>
+							</Parameters>
+						</Subject>
+					</Subjects>
+				</OnLike>
+			</EventHandler>
 		</Style>
 	</Styles>
 	<!-- 预创建的实例列表

@@ -52,6 +52,20 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public Subject refreshSubject { get; set; } = new Subject();
         }
 
+        public class LabelButton
+        {
+            [XmlAttribute("fontSize")]
+            public int fontSize { get; set; } = 12;
+            [XmlAttribute("fontColor")]
+            public string fontColor { get; set; } = "#FFFFFFFF";
+            [XmlAttribute("height")]
+            public int height { get; set; } = 24;
+            [XmlAttribute("image")]
+            public string image { get; set; } = "";
+            [XmlElement("Border")]
+            public Border border { get; set; } = new Border();
+        }
+
         public class TabButton
         {
             [XmlAttribute("name")]
@@ -174,6 +188,20 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public ImageToolBox imageToolBox { get; set; } = new ImageToolBox();
             [XmlElement("CoverPicture")]
             public CoverPicture coverPicture { get; set; } = new CoverPicture();
+            [XmlElement("LabelButton")]
+            public LabelButton labelButton { get; set; } = new LabelButton();
+            [XmlElement("EventHandler")]
+            public EventHandler eventHandler { get; set; } = new EventHandler();
+        }
+
+        public class EventHandler
+        {
+            [XmlArray("OnLike"), XmlArrayItem("Subject")]
+            public Subject[] onLikeSubjectS { get; set; } = new Subject[0];
+            [XmlArray("OnRefresh"), XmlArrayItem("Subject")]
+            public Subject[] onRefreshSubjectS { get; set; } = new Subject[0];
+            [XmlArray("OnClose"), XmlArrayItem("Subject")]
+            public Subject[] onCloseSubjectS { get; set; } = new Subject[0];
         }
 
 

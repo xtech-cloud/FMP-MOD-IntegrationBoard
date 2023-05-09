@@ -42,6 +42,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public Text txtDescription;
             public Transform frameTopic;
             public Transform frameDescription;
+            public Transform labelButton;
             public RawImage imgPicture;
             public Toggle tgLike;
             public Toggle tgTabTemplate;
@@ -88,6 +89,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
         private LibMVCS.Signal signalAddLike_;
         private Coroutine coroutineAutoClose_;
+        private List<GameObject> labelS_ = new List<GameObject>();
 
 
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
@@ -124,6 +126,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             uiReference_.pageTemplate = rootUI.transform.Find("Board/Panel/pageTemplate");
             uiReference_.tfImageToolBox = rootUI.transform.Find("Board/Panel/__home__/imageToolBox");
             uiReference_.pageTemplate.gameObject.SetActive(false);
+            uiReference_.labelButton = rootUI.transform.Find("Board/Panel/__home__/TitleBar/labelS/label");
+            uiReference_.labelButton.gameObject.SetActive(false);
             uiReference_.pageS.Add("__home__", rootUI.transform.Find("Board/Panel/__home__").gameObject);
             applyStyle();
             createTabs();
@@ -502,6 +506,24 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
             });
 
+            // 应用标签样式
+            {
+                loadTextureFromTheme(style_.labelButton.image, (_texture) =>
+                {
+                    Vector4 border = new Vector4(style_.labelButton.border.left, style_.labelButton.border.bottom, style_.labelButton.border.right, style_.labelButton.border.top);
+                    Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                    var image = uiReference_.labelButton.GetComponent<Image>();
+                    image.sprite = sprite;
+                }, () =>
+                {
+
+                });
+                var text = uiReference_.labelButton.Find("Text").GetComponent<Text>();
+                Color color;
+                if (ColorUtility.TryParseHtmlString(style_.labelButton.fontColor, out color))
+                    text.color = color;
+                text.fontSize = style_.labelButton.fontSize;
+            }
         }
 
         private void bindEvents()
@@ -568,6 +590,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     uiReference_.tgLike.interactable = false;
                     (entry_ as MyEntry).getDummyModel().SaveAddLike(activeContentUri_);
                     signalAddLike_.Emit(null);
+
+                    Dictionary<string, object> variableS = new Dictionary<string, object>();
+                    variableS["{{uri}}"] = activeContentUri_;
+                    publishSubjects(style_.eventHandler.onLikeSubjectS, variableS);
                 }
             });
         }
@@ -623,6 +649,28 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 signalAddLike_.Emit(null);
                 uiReference_.tgLike.interactable = true;
                 uiReference_.toggleTabS.First().isOn = true;
+                // 刷新label
+                foreach (var obj in labelS_)
+                {
+                    GameObject.Destroy(obj);
+                }
+                labelS_.Clear();
+                foreach (var label in _content.label.Split(";"))
+                {
+                    var clone = GameObject.Instantiate(uiReference_.labelButton.gameObject, uiReference_.labelButton.parent);
+                    clone.SetActive(true);
+                    labelS_.Add(clone);
+                    clone.transform.Find("Text").GetComponent<Text>().text = label;
+                    string uriLink = "";
+                    if (_content.kvS.TryGetValue(string.Format("label.{0}.uri", label), out uriLink))
+                    {
+                        clone.GetComponent<Button>().onClick.AddListener(() =>
+                        {
+                            refreshContent(_source, uriLink);
+                        });
+                    }
+                }
+
                 // 刷新所有tab对应的页面
                 uiReference_.toggleTabS.ForEach((_toggle) =>
                 {
@@ -684,6 +732,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 {
                 });
             }
+
+            Dictionary<string, object> variableS = new Dictionary<string, object>();
+            variableS["{{uri}}"] = activeContentUri_;
+            publishSubjects(style_.eventHandler.onRefreshSubjectS, variableS);
         }
 
         private void createTabs()
