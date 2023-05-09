@@ -657,6 +657,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 labelS_.Clear();
                 foreach (var label in _content.label.Split(";"))
                 {
+                    if (string.IsNullOrWhiteSpace(label))
+                        continue;
                     var clone = GameObject.Instantiate(uiReference_.labelButton.gameObject, uiReference_.labelButton.parent);
                     clone.SetActive(true);
                     labelS_.Add(clone);
