@@ -196,12 +196,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
         public class EventHandler
         {
-            [XmlArray("OnLike"), XmlArrayItem("Subject")]
+            [XmlArray("OnLikeS"), XmlArrayItem("Subject")]
             public Subject[] onLikeSubjectS { get; set; } = new Subject[0];
-            [XmlArray("OnRefresh"), XmlArrayItem("Subject")]
+            [XmlArray("OnRefreshS"), XmlArrayItem("Subject")]
             public Subject[] onRefreshSubjectS { get; set; } = new Subject[0];
-            [XmlArray("OnClose"), XmlArrayItem("Subject")]
-            public Subject[] onCloseSubjectS { get; set; } = new Subject[0];
         }
 
 

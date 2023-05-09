@@ -71,8 +71,8 @@
 	  LabelButton.height: 标签的高度，宽度自动适配
 	  LabelButton.image: 标签的图片
       LabelButton.Border: 标签图片的九宫格边界
-      EcentHandler.OnRefresh: 内容刷新事件的处理
-      EcentHandler.OnLike: 点赞刷新事件的处理
+      EcentHandler.OnRefreshS: 内容刷新事件的发布的消息订阅列表
+      EcentHandler.OnLikeS: 点赞刷新事件的发布的消息订阅列表
     -->
 	<Styles>
 		<Style name="rectangle" width="880" height="740" autoCloseTimeout="30">
@@ -208,26 +208,22 @@
 			</TabBar>
 			<CoverPicture fitmode="zoom" maxZoomIn="3.0"/>
 			<EventHandler>
-				<OnRefresh>
-					<Subjects>
-						<Subject message="/XTC/Analytics/TrackerRecord">
-							<Parameters>
-								<Parameter key="eventID" value="/XTC/IntegerationBoard/Open" type="string"/>
-								<Parameter key="eventParameter" value='{"uid":"{{uid}}"}' type="string"/>
-							</Parameters>
-						</Subject>
-					</Subjects>
-				</OnRefresh>
-				<OnLike>
-					<Subjects>
-						<Subject message="/XTC/Analytics/TrackerRecord">
-							<Parameters>
-								<Parameter key="eventID" value="/XTC/IntegerationBoard/Like" type="string"/>
-								<Parameter key="eventParameter" value='{"uid":"{{uid}}"}' type="string"/>
-							</Parameters>
-						</Subject>
-					</Subjects>
-				</OnLike>
+				<OnRefreshS>
+					<Subject message="/XTC/Analytics/TrackerRecord">
+						<Parameters>
+							<Parameter key="eventID" value="/XTC/IntegerationBoard/Open" type="string"/>
+							<Parameter key="eventParameter" value='{"uri":"{{uri}}"}' type="string"/>
+						</Parameters>
+					</Subject>
+				</OnRefreshS>
+				<OnLikeS>
+					<Subject message="/XTC/Analytics/TrackerRecord">
+						<Parameters>
+							<Parameter key="eventID" value="/XTC/IntegerationBoard/Like" type="string"/>
+							<Parameter key="eventParameter" value='{"uri":"{{uri}}"}' type="string"/>
+						</Parameters>
+					</Subject>
+				</OnLikeS>
 			</EventHandler>
 		</Style>
 	</Styles>
