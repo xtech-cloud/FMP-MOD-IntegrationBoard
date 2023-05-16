@@ -635,6 +635,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     uiReference_.btnDescriptionSwitch.gameObject.SetActive(true);
                     uiReference_.frameDescription.gameObject.SetActive(false);
                 }
+                uiReference_.tgLike.isOn = false;
                 uiReference_.tgLike.gameObject.SetActive(true);
                 contentReader_.LoadTexture("cover.png", (_texture) =>
                 {
@@ -707,9 +708,11 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                             break;
                         }
                     }
+                    _toggle.isOn = false;
                     _toggle.gameObject.SetActive(visible);
                 });
                 // 刷新Tab后不允许全部关闭
+                uiReference_.toggleTabS.First().isOn = true;
                 uiReference_.tgTabTemplate.group.allowSwitchOff = false;
             };
 
