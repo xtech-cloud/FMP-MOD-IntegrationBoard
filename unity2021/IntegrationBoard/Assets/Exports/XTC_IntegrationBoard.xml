@@ -212,7 +212,7 @@
 					<Subject message="/XTC/Analytics/TrackerRecord">
 						<Parameters>
 							<Parameter key="eventID" value="/XTC/IntegerationBoard/Open" type="string"/>
-							<Parameter key="eventParameter" value='{"uri":"{{uri}}"}' type="string"/>
+							<Parameter key="eventParameter" value='{"uri":"{{uri}}"}' type="_"/>
 						</Parameters>
 					</Subject>
 				</OnRefreshS>
@@ -220,10 +220,18 @@
 					<Subject message="/XTC/Analytics/TrackerRecord">
 						<Parameters>
 							<Parameter key="eventID" value="/XTC/IntegerationBoard/Like" type="string"/>
-							<Parameter key="eventParameter" value='{"uri":"{{uri}}"}' type="string"/>
+							<Parameter key="eventParameter" value='{"uri":"{{uri}}"}' type="_"/>
 						</Parameters>
 					</Subject>
 				</OnLikeS>
+				<OnCloseS>
+					<Subject message="/XTC/Analytics/TrackerRecord">
+						<Parameters>
+							<Parameter key="eventID" value="/XTC/IntegerationBoard/Close" type="string"/>
+							<Parameter key="eventParameter" value='{"uri":"{{uri}}"}' type="_"/>
+						</Parameters>
+					</Subject>
+				</OnCloseS>
 			</EventHandler>
 		</Style>
 	</Styles>

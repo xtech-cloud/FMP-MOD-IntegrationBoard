@@ -12,6 +12,7 @@ using LibMVCS = XTC.FMP.LIB.MVCS;
 using XTC.FMP.MOD.IntegrationBoard.LIB.Bridge;
 using XTC.FMP.MOD.IntegrationBoard.LIB.MVCS;
 using XTC.FMP.MOD.IntegrationBoard.LIB.Proto;
+using Newtonsoft.Json;
 
 namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 {
@@ -161,7 +162,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                             data[parameter.key] = bool.Parse(parameter.value);
                     }
                 }
-                logger_.Trace("publish {0}", subject.message);
+                logger_.Trace("publish {0} with {1}", subject.message, JsonConvert.SerializeObject(data));
                 entry_.getDummyModel().Publish(subject.message, data);
             }
         }

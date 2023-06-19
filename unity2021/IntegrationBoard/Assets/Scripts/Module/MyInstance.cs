@@ -188,6 +188,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 mono_.StopCoroutine(coroutineAutoClose_);
                 coroutineAutoClose_ = null;
             }
+            Dictionary<string, object> variableS = buildVariableS(style_.eventHandler.onCloseSubjectS);
+            variableS["{{uid}}"] = uid;
+            variableS["{{uri}}"] = activeContentUri_;
+            publishSubjects(style_.eventHandler.onCloseSubjectS, variableS);
         }
 
         public void RefreshContent(string _source, string _uri)
@@ -591,7 +595,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     (entry_ as MyEntry).getDummyModel().SaveAddLike(activeContentUri_);
                     signalAddLike_.Emit(null);
 
-                    Dictionary<string, object> variableS = new Dictionary<string, object>();
+                    Dictionary<string, object> variableS = buildVariableS(style_.eventHandler.onCloseSubjectS);
                     variableS["{{uri}}"] = activeContentUri_;
                     publishSubjects(style_.eventHandler.onLikeSubjectS, variableS);
                 }
@@ -738,7 +742,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 });
             }
 
-            Dictionary<string, object> variableS = new Dictionary<string, object>();
+            Dictionary<string, object> variableS = buildVariableS(style_.eventHandler.onCloseSubjectS);
             variableS["{{uri}}"] = activeContentUri_;
             publishSubjects(style_.eventHandler.onRefreshSubjectS, variableS);
         }
@@ -993,6 +997,22 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 onAutoCloseTimeout();
             }
             coroutineAutoClose_ = null;
+        }
+
+        private Dictionary<string, object> buildVariableS(MyConfig.Subject[] _subjectS)
+        {
+            Dictionary<string, object> variableS = new Dictionary<string, object>();
+            foreach (var subject in _subjectS)
+            {
+                foreach (var parameter in subject.parameters)
+                {
+                    if (parameter.type != "_")
+                        continue;
+                    string value = parameter.value.Replace("{{uid}}", uid).Replace("{{uri}}", activeContentUri_);
+                    variableS[parameter.value] = value;
+                }
+            }
+            return variableS;
         }
     }
 }

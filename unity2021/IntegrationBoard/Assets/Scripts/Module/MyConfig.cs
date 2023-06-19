@@ -200,6 +200,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public Subject[] onLikeSubjectS { get; set; } = new Subject[0];
             [XmlArray("OnRefreshS"), XmlArrayItem("Subject")]
             public Subject[] onRefreshSubjectS { get; set; } = new Subject[0];
+            [XmlArray("OnCloseS"), XmlArrayItem("Subject")]
+            public Subject[] onCloseSubjectS { get; set; } = new Subject[0];
         }
 
 
