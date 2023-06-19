@@ -74,7 +74,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         public Action onAutoCloseTimeout;
 
         private UiReference uiReference_ = new UiReference();
-        private ContentReader contentReader_ = null;
+        private AssetReader assetReader_ = null;
 
         /// <summary>
         /// 封面图片适配后的大小
@@ -95,7 +95,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
             : base(_uid, _style, _config, _catalog, _logger, _settings, _entry, _mono, _rootAttachments)
         {
-            contentReader_ = new ContentReader(contentObjectsPool);
+            assetReader_ = new AssetReader(assetObjectsPool);
             signalAddLike_ = new LibMVCS.Signal((entry_ as MyEntry).getDummyModel());
         }
 
@@ -641,16 +641,16 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 }
                 uiReference_.tgLike.isOn = false;
                 uiReference_.tgLike.gameObject.SetActive(true);
-                contentReader_.LoadTexture("cover.png", (_texture) =>
-                {
-                    uiReference_.imgPicture.texture = _texture;
-                    uiReference_.imgPicture.SetNativeSize();
-                    uiReference_.imgPicture.gameObject.SetActive(true);
-                    fitImage();
-                }, () =>
-                {
+                assetReader_.LoadTexture(activeContentUri_ + "/cover.png", (_texture) =>
+                 {
+                     uiReference_.imgPicture.texture = _texture;
+                     uiReference_.imgPicture.SetNativeSize();
+                     uiReference_.imgPicture.gameObject.SetActive(true);
+                     fitImage();
+                 }, () =>
+                 {
 
-                });
+                 });
                 signalAddLike_.Emit(null);
                 uiReference_.tgLike.interactable = true;
                 uiReference_.toggleTabS.First().isOn = true;
@@ -723,9 +723,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             if (_source == "assloud://")
             {
 
-                contentReader_.AssetRootPath = settings_["path.assets"].AsString();
-                contentReader_.ContentUri = _uri;
-                contentReader_.LoadText("meta.json", (_data) =>
+                assetReader_.AssetRootPath = settings_["path.assets"].AsString();
+                assetReader_.LoadText(activeContentUri_ + "/meta.json", (_data) =>
                 {
                     ContentMetaSchema content = null;
                     try

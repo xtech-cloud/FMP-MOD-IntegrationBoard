@@ -71,8 +71,9 @@
 	  LabelButton.height: 标签的高度，宽度自动适配
 	  LabelButton.image: 标签的图片
       LabelButton.Border: 标签图片的九宫格边界
-      EcentHandler.OnRefreshS: 内容刷新事件的发布的消息订阅列表
-      EcentHandler.OnLikeS: 点赞刷新事件的发布的消息订阅列表
+      EventHandler.OnRefreshS: 内容刷新事件的发布的消息订阅列表
+      EventHandler.OnLikeS: 点赞刷新事件的发布的消息订阅列表
+      EventHandler.OnCloseS: 集成面板关闭后发布的消息订阅列表
     -->
 	<Styles>
 		<Style name="rectangle" width="880" height="740" autoCloseTimeout="30">

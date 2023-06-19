@@ -82,7 +82,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             entry_.DynamicRegister(_uid, logger_);
             instance.SetupBridges();
             yield return new WaitForSeconds(_delay);
-            instance.contentObjectsPool.Prepare();
+            instance.assetObjectsPool.Prepare();
             instance.rootUI.transform.Find("Board").GetComponent<RectTransform>().anchoredPosition = new Vector2(instance.adjustedX, instance.adjustedY);
             instance.HandleOpened(_source, _uri);
             // 覆盖自动关闭超时事件
@@ -105,7 +105,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             }
             yield return new WaitForSeconds(_delay);
             instance.HandleClosed();
-            instance.contentObjectsPool.Dispose();
+            instance.assetObjectsPool.Dispose();
             // 延时一帧执行，在发布消息时不能动态注销
             yield return new WaitForEndOfFrame();
             instance.HandleDeleted();
