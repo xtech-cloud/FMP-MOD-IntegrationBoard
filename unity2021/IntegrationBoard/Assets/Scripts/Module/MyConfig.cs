@@ -42,6 +42,22 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public Border border { get; set; } = new Border();
         }
 
+        public class PanelBackground : VisualUiElement
+        {
+            [XmlAttribute("maskable")]
+            public bool maskable = true;
+            [XmlElement("Margin")]
+            public Border margin { get; set; } = new Border();
+        }
+
+        public class MainMask
+        {
+            [XmlAttribute("image")]
+            public string image { get; set; } = "";
+            [XmlElement("Border")]
+            public Border border { get; set; } = new Border();
+        }
+
         public class PageSlot
         {
             [XmlAttribute("page")]
@@ -98,6 +114,12 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         {
             [XmlAttribute]
             public int space { get; set; } = 0;
+            [XmlAttribute]
+            public string layout { get; set; } = "";
+            [XmlAttribute]
+            public int offset { get; set; } = 0;
+            [XmlAttribute]
+            public bool useMask { get; set; } = true;
             [XmlElement("Background")]
             public VisualUiElement background { get; set; } = new VisualUiElement();
             [XmlElement("CloseButton")]
@@ -124,16 +146,6 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public float maxZoomIn { get; set; } = 0f;
         }
 
-        public class SizeRange
-        {
-            [XmlAttribute("topicWidth")]
-            public int topicWidth { get; set; } = 400;
-            [XmlAttribute("descriptionWidth")]
-            public int descriptionWidth { get; set; } = 400;
-            [XmlAttribute("descriptionMaxHeight")]
-            public int descriptionMaxHeight { get; set; } = 0;
-        }
-
         public class SwitchButton
         {
             [XmlAttribute("background")]
@@ -146,6 +158,40 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public int iconSize { get; set; } = 16;
         }
 
+        public class Like
+        {
+            [XmlElement("Anchor")]
+            public Anchor anchor { get; set; } = new Anchor();
+            [XmlElement("Background")]
+            public VisualUiElement background { get; set; } = new VisualUiElement();
+            [XmlElement("SelectedIcon")]
+            public UiElement selectedIcon { get; set; } = new UiElement();
+            [XmlElement("UnselectedIcon")]
+            public UiElement unselectedIcon { get; set; } = new UiElement();
+        }
+
+        public class Topic
+        {
+            [XmlElement("Anchor")]
+            public Anchor anchor { get; set; } = new Anchor();
+            [XmlElement("Background")]
+            public VisualUiElement background { get; set; } = new VisualUiElement();
+            [XmlElement("SwitchButton")]
+            public SwitchButton switchButton { get; set; } = new SwitchButton();
+        }
+
+        public class Description
+        {
+            [XmlAttribute("maxHeight")]
+            public int maxHeight { get; set; } = 110;
+            [XmlElement("Anchor")]
+            public Anchor anchor { get; set; } = new Anchor();
+            [XmlElement("Background")]
+            public VisualUiElement background { get; set; } = new VisualUiElement();
+            [XmlElement("SwitchButton")]
+            public SwitchButton switchButton { get; set; } = new SwitchButton();
+        }
+
         public class Style
         {
             [XmlAttribute("name")]
@@ -156,30 +202,24 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public int height { get; set; } = 0;
             [XmlAttribute("autoCloseTimeout")]
             public int autoCloseTimeout { get; set; } = 0;
+            [XmlAttribute("effect")]
+            public string effect { get; set; } = "";
+            [XmlElement("MainMask")]
+            public MainMask mainMask { get; set; } = new MainMask();
             [XmlElement("AlignGrid")]
             public AlignGrid alignGrid { get; set; } = new AlignGrid();
+            [XmlElement("Like")]
+            public Like like { get; set; } = new Like();
+            [XmlElement("Topic")]
+            public Topic topic { get; set; } = new Topic();
+            [XmlElement("Description")]
+            public Description description { get; set; } = new Description();
             [XmlElement("TitleBarBackground")]
             public VisualUiElement titleBarBackground { get; set; } = new VisualUiElement();
-            [XmlElement("TopicBackground")]
-            public VisualUiElement topicBackground { get; set; } = new VisualUiElement();
-            [XmlElement("DescriptionBackground")]
-            public VisualUiElement descriptionBackground { get; set; } = new VisualUiElement();
             [XmlElement("PanelBackground")]
-            public VisualUiElement panelBackground { get; set; } = new VisualUiElement();
-            [XmlElement("LikeBackground")]
-            public VisualUiElement likeBackground { get; set; } = new VisualUiElement();
+            public PanelBackground panelBackground { get; set; } = new PanelBackground();
             [XmlElement("ToolBoxBackground")]
             public VisualUiElement toolBoxBackground { get; set; } = new VisualUiElement();
-            [XmlElement("TopicSwitchButton")]
-            public SwitchButton topicSwitchButton { get; set; } = new SwitchButton();
-            [XmlElement("DescriptionSwitchButton")]
-            public SwitchButton descriptionSwitchButton { get; set; } = new SwitchButton();
-            [XmlElement("LikedIcon")]
-            public UiElement likedIcon { get; set; } = new UiElement();
-            [XmlElement("UnlikedIcon")]
-            public UiElement unlikedIcon { get; set; } = new UiElement();
-            [XmlElement("SizeRange")]
-            public SizeRange sizeRange { get; set; } = new SizeRange();
             [XmlArray("PageSlots"), XmlArrayItem("PageSlot")]
             public PageSlot[] pageSlotS { get; set; } = new PageSlot[0];
             [XmlElement("TabBar")]

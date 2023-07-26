@@ -10,6 +10,7 @@ using System.Linq;
 using System;
 using System.Collections;
 using System.IO;
+using SoftMasking;
 
 namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 {
@@ -33,6 +34,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
         public class UiReference
         {
+            public Transform tfMask;
             public Transform tfPanel;
             public Transform tfTabBar;
             public Transform tfTitleBar;
@@ -107,28 +109,29 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </remarks>
         public void HandleCreated()
         {
-            uiReference_.tfPanel = rootUI.transform.Find("Board/Panel");
+            uiReference_.tfMask = rootUI.transform.Find("Board/Mask");
+            uiReference_.tfPanel = rootUI.transform.Find("Board/Mask/Panel");
             uiReference_.tfTabBar = rootUI.transform.Find("Board/TabBar");
-            uiReference_.tfTitleBar = rootUI.transform.Find("Board/Panel/__home__/TitleBar");
-            uiReference_.txtTitle = rootUI.transform.Find("Board/Panel/__home__/TitleBar/txtTitle").GetComponent<Text>();
-            uiReference_.txtCaption = rootUI.transform.Find("Board/Panel/__home__/TitleBar/txtCaption").GetComponent<Text>();
-            uiReference_.txtTopic = rootUI.transform.Find("Board/Panel/__home__/frameTopic/txtTopic").GetComponent<Text>();
-            uiReference_.txtDescription = rootUI.transform.Find("Board/Panel/__home__/frameDescription/ScrollView/Viewport/Content/txtDescription").GetComponent<Text>();
-            uiReference_.frameTopic = rootUI.transform.Find("Board/Panel/__home__/frameTopic");
-            uiReference_.frameDescription = rootUI.transform.Find("Board/Panel/__home__/frameDescription");
-            uiReference_.btnTopicSwitch = rootUI.transform.Find("Board/Panel/__home__/frameTopic/btnSwitch").GetComponent<Button>();
-            uiReference_.btnDescriptionSwitch = rootUI.transform.Find("Board/Panel/__home__/frameDescription/btnSwitch").GetComponent<Button>();
-            uiReference_.imgPicture = rootUI.transform.Find("Board/Panel/__home__/svPicture/Viewport/Content").GetComponent<RawImage>();
-            uiReference_.tgLike = rootUI.transform.Find("Board/Panel/__home__/tgLike").GetComponent<Toggle>();
+            uiReference_.tfTitleBar = rootUI.transform.Find("Board/Mask/Panel/__home__/TitleBar");
+            uiReference_.txtTitle = rootUI.transform.Find("Board/Mask/Panel/__home__/TitleBar/txtTitle").GetComponent<Text>();
+            uiReference_.txtCaption = rootUI.transform.Find("Board/Mask/Panel/__home__/TitleBar/txtCaption").GetComponent<Text>();
+            uiReference_.txtTopic = rootUI.transform.Find("Board/Mask/Panel/__home__/frameTopic/txtTopic").GetComponent<Text>();
+            uiReference_.txtDescription = rootUI.transform.Find("Board/Mask/Panel/__home__/frameDescription/ScrollView/Viewport/Content/txtDescription").GetComponent<Text>();
+            uiReference_.frameTopic = rootUI.transform.Find("Board/Mask/Panel/__home__/frameTopic");
+            uiReference_.frameDescription = rootUI.transform.Find("Board/Mask/Panel/__home__/frameDescription");
+            uiReference_.btnTopicSwitch = rootUI.transform.Find("Board/Mask/Panel/__home__/frameTopic/btnSwitch").GetComponent<Button>();
+            uiReference_.btnDescriptionSwitch = rootUI.transform.Find("Board/Mask/Panel/__home__/frameDescription/btnSwitch").GetComponent<Button>();
+            uiReference_.imgPicture = rootUI.transform.Find("Board/Mask/Panel/__home__/svPicture/Viewport/Content").GetComponent<RawImage>();
+            uiReference_.tgLike = rootUI.transform.Find("Board/Mask/Panel/__home__/tgLike").GetComponent<Toggle>();
             uiReference_.tgTabTemplate = rootUI.transform.Find("Board/TabBar/tgTemplate").GetComponent<Toggle>();
             uiReference_.tgTabTemplate.gameObject.SetActive(false);
             uiReference_.btnTabClose = rootUI.transform.Find("Board/TabBar/btnClose").GetComponent<Button>();
-            uiReference_.pageTemplate = rootUI.transform.Find("Board/Panel/pageTemplate");
-            uiReference_.tfImageToolBox = rootUI.transform.Find("Board/Panel/__home__/imageToolBox");
+            uiReference_.pageTemplate = rootUI.transform.Find("Board/Mask/Panel/pageTemplate");
+            uiReference_.tfImageToolBox = rootUI.transform.Find("Board/Mask/Panel/__home__/imageToolBox");
             uiReference_.pageTemplate.gameObject.SetActive(false);
-            uiReference_.labelButton = rootUI.transform.Find("Board/Panel/__home__/TitleBar/labelS/label");
+            uiReference_.labelButton = rootUI.transform.Find("Board/Mask/Panel/__home__/TitleBar/labelS/label");
             uiReference_.labelButton.gameObject.SetActive(false);
-            uiReference_.pageS.Add("__home__", rootUI.transform.Find("Board/Panel/__home__").gameObject);
+            uiReference_.pageS.Add("__home__", rootUI.transform.Find("Board/Mask/Panel/__home__").gameObject);
             applyStyle();
             createTabs();
             bindEvents();
@@ -282,24 +285,55 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             var rtTemplate = rootUI.transform.Find("Board").GetComponent<RectTransform>();
             rtTemplate.sizeDelta = new Vector2(style_.width, style_.height);
 
+            //Material defaultUIMaterial = rootAttachments.transform.Find("UIDefault").GetComponent<MeshRenderer>().material;
+            Material defaultUIMaterial = uiReference_.tfMask.gameObject.GetComponent<Image>().materialForRendering;
+            // 应用遮罩
+            {
+                var softmask = uiReference_.tfMask.gameObject.AddComponent<SoftMask>();
+                softmask.defaultUIShader = rootAttachments.transform.Find("softmask/SoftMask").GetComponent<MeshRenderer>().material.shader;
+                softmask.defaultUIETC1Shader = rootAttachments.transform.Find("softmask/SoftMaskETC1").GetComponent<MeshRenderer>().material.shader;
+                var rtfMask = uiReference_.tfMask.GetComponent<RectTransform>();
+                rtfMask.sizeDelta = new Vector2(style_.width, style_.height - style_.tabBar.offset);
+                rtfMask.anchoredPosition = new Vector2(0, style_.tabBar.offset / 2);
+                var rtfPanel = uiReference_.tfPanel.GetComponent<RectTransform>();
+                rtfPanel.sizeDelta = new Vector2(style_.width, style_.height - style_.tabBar.offset);
+                // 加载遮罩相关图片
+                loadTextureFromTheme(style_.mainMask.image, (_texture) =>
+                {
+                    Vector4 border = new Vector4(style_.mainMask.border.left, style_.mainMask.border.bottom, style_.mainMask.border.right, style_.mainMask.border.top);
+                    Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                    var image = uiReference_.tfMask.GetComponent<Image>();
+                    image.sprite = sprite;
+                }, () =>
+                {
+
+                });
+            }
+
             // 加载面板相关图片
             loadTextureFromTheme(style_.panelBackground.image, (_texture) =>
             {
                 Vector4 border = new Vector4(style_.panelBackground.border.left, style_.panelBackground.border.bottom, style_.panelBackground.border.right, style_.panelBackground.border.top);
                 Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
-                var image = uiReference_.tfPanel.GetComponent<Image>();
-                image.sprite = sprite;
                 Color color;
-                if (ColorUtility.TryParseHtmlString(style_.panelBackground.color, out color))
-                    image.color = color;
-                image = uiReference_.tfPanel.Find("bg").GetComponent<Image>();
+                if (!ColorUtility.TryParseHtmlString(style_.panelBackground.color, out color))
+                    color = Color.white;
+                var image = uiReference_.tfPanel.Find("bg").GetComponent<Image>();
                 image.sprite = sprite;
                 image.color = color;
+                mono_.StartCoroutine(delayDo(1, () =>
+                {
+                    image.maskable = style_.panelBackground.maskable;
+                    image.materialForRendering = defaultUIMaterial;
+                    //if (!style_.panelBackground.maskable)
+                    //    image.materialForRendering.shader = defaultUIShader;
+                }));
+                RectTransform rtBg = image.GetComponent<RectTransform>();
+                rtBg.sizeDelta = new Vector2(-(style_.panelBackground.margin.left + style_.panelBackground.margin.right), -(style_.panelBackground.margin.top + style_.panelBackground.margin.bottom));
             }, () =>
             {
 
             });
-
 
             // 加载标题栏相关图片
             loadTextureFromTheme(style_.titleBarBackground.image, (_texture) =>
@@ -319,196 +353,212 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
             });
 
-            // 更改点赞按钮样式
-            loadTextureFromTheme(style_.likeBackground.image, (_texture) =>
+            // 应用点赞样式
             {
-                Vector4 border = new Vector4(style_.likeBackground.border.left, style_.likeBackground.border.bottom, style_.likeBackground.border.right, style_.likeBackground.border.top);
-                Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
-                var image = uiReference_.tgLike.transform.Find("Background").GetComponent<Image>();
-                image.sprite = sprite;
-                Color color;
-                if (ColorUtility.TryParseHtmlString(style_.likeBackground.color, out color))
-                    image.color = color;
-            }, () =>
-            {
+                alignByAncor(uiReference_.tgLike.transform, style_.like.anchor);
+                // 更改点赞按钮样式
+                loadTextureFromTheme(style_.like.background.image, (_texture) =>
+                {
+                    Vector4 border = new Vector4(style_.like.background.border.left, style_.like.background.border.bottom, style_.like.background.border.right, style_.like.background.border.top);
+                    Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                    var image = uiReference_.tgLike.transform.Find("Background").GetComponent<Image>();
+                    image.sprite = sprite;
+                    Color color;
+                    if (ColorUtility.TryParseHtmlString(style_.like.background.color, out color))
+                        image.color = color;
+                }, () =>
+                {
 
-            });
+                });
 
-            // 加载工具栏相关图片
-            loadTextureFromTheme(style_.tabBar.background.image, (_texture) =>
-            {
-                Vector4 border = new Vector4(style_.tabBar.background.border.left, style_.tabBar.background.border.bottom, style_.tabBar.background.border.right, style_.tabBar.background.border.top);
-                Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
-                var image = uiReference_.tfTabBar.GetComponent<Image>();
-                image.sprite = sprite;
-                Color color;
-                if (ColorUtility.TryParseHtmlString(style_.tabBar.background.color, out color))
-                    image.color = color;
+                // 加载点赞后图标
+                loadTextureFromTheme(style_.like.selectedIcon.image, (_texture) =>
+                {
+                    var icon = uiReference_.tgLike.transform.Find("Background/icon_checked");
+                    icon.GetComponent<RawImage>().texture = _texture;
+                    alignByAncor(icon, style_.like.selectedIcon.anchor);
+                }, () =>
+                {
 
-                image = uiReference_.tfTabBar.Find("bg").GetComponent<Image>();
-                image.sprite = sprite;
-                image.color = color;
-            }, () =>
-            {
+                });
 
-            });
+                // 加载点赞前图标
+                loadTextureFromTheme(style_.like.unselectedIcon.image, (_texture) =>
+                {
+                    var icon = uiReference_.tgLike.transform.Find("Background/icon_normal");
+                    icon.GetComponent<RawImage>().texture = _texture;
+                    alignByAncor(icon, style_.like.unselectedIcon.anchor);
+                }, () =>
+                {
 
+                });
+            }
 
-            var rtTopic = uiReference_.frameTopic.GetComponent<RectTransform>();
-            rtTopic.sizeDelta = new Vector2(style_.sizeRange.topicWidth, rtTopic.sizeDelta.y);
-            // 加载标语面板背景
-            loadTextureFromTheme(style_.topicBackground.image, (_texture) =>
+            // 应用标语样式
             {
-                Vector4 border = new Vector4(style_.topicBackground.border.left, style_.topicBackground.border.bottom, style_.topicBackground.border.right, style_.topicBackground.border.top);
-                Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
-                var image = uiReference_.frameTopic.GetComponent<Image>();
-                image.sprite = sprite;
-                Color color;
-                if (ColorUtility.TryParseHtmlString(style_.topicBackground.color, out color))
-                    image.color = color;
-            }, () =>
-            {
+                alignByAncor(uiReference_.frameTopic.transform, style_.topic.anchor);
+                // 加载标语面板背景
+                loadTextureFromTheme(style_.topic.background.image, (_texture) =>
+                {
+                    Vector4 border = new Vector4(style_.topic.background.border.left, style_.topic.background.border.bottom, style_.topic.background.border.right, style_.topic.background.border.top);
+                    Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                    var image = uiReference_.frameTopic.GetComponent<Image>();
+                    image.sprite = sprite;
+                    Color color;
+                    if (ColorUtility.TryParseHtmlString(style_.topic.background.color, out color))
+                        image.color = color;
+                }, () =>
+                {
 
-            });
+                });
+                // 加载标语切换图标
+                loadTextureFromTheme(style_.topic.switchButton.background, (_texture) =>
+                {
+                    Vector4 border = new Vector4(style_.topic.switchButton.border.left, style_.topic.switchButton.border.bottom, style_.topic.switchButton.border.right, style_.topic.switchButton.border.top);
+                    Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                    uiReference_.btnTopicSwitch.GetComponent<Image>().sprite = sprite;
+                }, () =>
+                {
 
-            // 加载标语切换图标
-            loadTextureFromTheme(style_.topicSwitchButton.background, (_texture) =>
-            {
-                Vector4 border = new Vector4(style_.topicSwitchButton.border.left, style_.topicSwitchButton.border.bottom, style_.topicSwitchButton.border.right, style_.topicSwitchButton.border.top);
-                Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
-                uiReference_.btnTopicSwitch.GetComponent<Image>().sprite = sprite;
-            }, () =>
-            {
+                });
+                loadTextureFromTheme(style_.topic.switchButton.icon, (_texture) =>
+                {
+                    var rtIcon = uiReference_.btnTopicSwitch.transform.Find("icon").GetComponent<RectTransform>();
+                    rtIcon.sizeDelta = new Vector2(style_.topic.switchButton.iconSize, style_.topic.switchButton.iconSize);
+                    rtIcon.GetComponent<RawImage>().texture = _texture;
+                }, () =>
+                {
 
-            });
-            loadTextureFromTheme(style_.topicSwitchButton.icon, (_texture) =>
-            {
-                var rtIcon = uiReference_.btnTopicSwitch.transform.Find("icon").GetComponent<RectTransform>();
-                rtIcon.sizeDelta = new Vector2(style_.topicSwitchButton.iconSize, style_.topicSwitchButton.iconSize);
-                rtIcon.GetComponent<RawImage>().texture = _texture;
-            }, () =>
-            {
+                });
+            }
 
-            });
+            // 应用描述样式
+            {
+                alignByAncor(uiReference_.frameDescription.transform, style_.description.anchor);
+                // 加载描述面板背景
+                loadTextureFromTheme(style_.description.background.image, (_texture) =>
+                {
+                    Vector4 border = new Vector4(style_.description.background.border.left, style_.description.background.border.bottom, style_.description.background.border.right, style_.description.background.border.top);
+                    Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                    var image = uiReference_.frameDescription.GetComponent<Image>();
+                    image.sprite = sprite;
+                    Color color;
+                    if (ColorUtility.TryParseHtmlString(style_.description.background.color, out color))
+                        image.color = color;
+                }, () =>
+                {
 
-            var rtDescription = uiReference_.frameDescription.GetComponent<RectTransform>();
-            rtDescription.sizeDelta = new Vector2(style_.sizeRange.descriptionWidth, rtTopic.sizeDelta.y);
-            // 加载描述面板背景
-            loadTextureFromTheme(style_.descriptionBackground.image, (_texture) =>
-            {
-                Vector4 border = new Vector4(style_.descriptionBackground.border.left, style_.descriptionBackground.border.bottom, style_.descriptionBackground.border.right, style_.descriptionBackground.border.top);
-                Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
-                var image = uiReference_.frameDescription.GetComponent<Image>();
-                image.sprite = sprite;
-                Color color;
-                if (ColorUtility.TryParseHtmlString(style_.descriptionBackground.color, out color))
-                    image.color = color;
-            }, () =>
-            {
+                });
 
-            });
+                // 加载描述切换图标
+                loadTextureFromTheme(style_.description.switchButton.background, (_texture) =>
+                {
+                    Vector4 border = new Vector4(style_.description.switchButton.border.left, style_.description.switchButton.border.bottom, style_.description.switchButton.border.right, style_.description.switchButton.border.top);
+                    Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                    uiReference_.btnDescriptionSwitch.GetComponent<Image>().sprite = sprite;
+                }, () =>
+                {
 
-            // 加载描述切换图标
-            loadTextureFromTheme(style_.descriptionSwitchButton.background, (_texture) =>
-            {
-                Vector4 border = new Vector4(style_.descriptionSwitchButton.border.left, style_.descriptionSwitchButton.border.bottom, style_.descriptionSwitchButton.border.right, style_.descriptionSwitchButton.border.top);
-                Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
-                uiReference_.btnDescriptionSwitch.GetComponent<Image>().sprite = sprite;
-            }, () =>
-            {
+                });
+                loadTextureFromTheme(style_.description.switchButton.icon, (_texture) =>
+                {
+                    var rtIcon = uiReference_.btnDescriptionSwitch.transform.Find("icon").GetComponent<RectTransform>();
+                    rtIcon.sizeDelta = new Vector2(style_.description.switchButton.iconSize, style_.description.switchButton.iconSize);
+                    rtIcon.GetComponent<RawImage>().texture = _texture;
+                }, () =>
+                {
 
-            });
-            loadTextureFromTheme(style_.descriptionSwitchButton.icon, (_texture) =>
-            {
-                var rtIcon = uiReference_.btnDescriptionSwitch.transform.Find("icon").GetComponent<RectTransform>();
-                rtIcon.sizeDelta = new Vector2(style_.descriptionSwitchButton.iconSize, style_.descriptionSwitchButton.iconSize);
-                rtIcon.GetComponent<RawImage>().texture = _texture;
-            }, () =>
-            {
-
-            });
-
-            // 加载点赞后图标
-            loadTextureFromTheme(style_.likedIcon.image, (_texture) =>
-            {
-                var icon = uiReference_.tgLike.transform.Find("Background/icon_checked");
-                icon.GetComponent<RawImage>().texture = _texture;
-                alignByAncor(icon, style_.likedIcon.anchor);
-            }, () =>
-            {
-
-            });
-
-            // 加载点赞前图标
-            loadTextureFromTheme(style_.unlikedIcon.image, (_texture) =>
-            {
-                var icon = uiReference_.tgLike.transform.Find("Background/icon_normal");
-                icon.GetComponent<RawImage>().texture = _texture;
-                alignByAncor(icon, style_.unlikedIcon.anchor);
-            }, () =>
-            {
-
-            });
+                });
 
 
-            // 加载关闭按钮图标
-            loadTextureFromTheme(style_.tabBar.closeButton.image, (_texture) =>
-            {
-                uiReference_.btnTabClose.GetComponent<RawImage>().texture = _texture;
-                alignByAncor(uiReference_.btnTabClose.transform, style_.tabBar.closeButton.anchor);
-            }, () =>
-            {
+            }
 
-            });
-
-            // 加载图片工具栏背景
-            loadTextureFromTheme(style_.imageToolBox.image, (_texture) =>
+            // 应用图片工具栏样式
             {
-                Vector4 border = new Vector4(style_.imageToolBox.border.left, style_.imageToolBox.border.bottom, style_.imageToolBox.border.right, style_.imageToolBox.border.top);
-                Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
-                var image = uiReference_.tfImageToolBox.GetComponent<Image>();
-                image.sprite = sprite;
-                Color color;
-                if (ColorUtility.TryParseHtmlString(style_.imageToolBox.color, out color))
-                    image.color = color;
                 alignByAncor(uiReference_.tfImageToolBox, style_.imageToolBox.anchor);
-            }, () =>
-            {
 
-            });
+                // 加载图片工具栏背景
+                loadTextureFromTheme(style_.imageToolBox.image, (_texture) =>
+                {
+                    Vector4 border = new Vector4(style_.imageToolBox.border.left, style_.imageToolBox.border.bottom, style_.imageToolBox.border.right, style_.imageToolBox.border.top);
+                    Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                    var image = uiReference_.tfImageToolBox.GetComponent<Image>();
+                    image.sprite = sprite;
+                    Color color;
+                    if (ColorUtility.TryParseHtmlString(style_.imageToolBox.color, out color))
+                        image.color = color;
+                }, () =>
+                {
 
-            // 加载图片工具栏缩小按钮
-            loadTextureFromTheme(style_.imageToolBox.btnZoomOut.image, (_texture) =>
-            {
-                var btn = uiReference_.tfImageToolBox.Find("btnZoomOut");
-                btn.GetComponent<RawImage>().texture = _texture;
-                alignByAncor(btn, style_.imageToolBox.btnZoomOut.anchor);
-            }, () =>
-            {
+                });
 
-            });
+                // 加载图片工具栏缩小按钮
+                loadTextureFromTheme(style_.imageToolBox.btnZoomOut.image, (_texture) =>
+                {
+                    var btn = uiReference_.tfImageToolBox.Find("btnZoomOut");
+                    btn.GetComponent<RawImage>().texture = _texture;
+                    alignByAncor(btn, style_.imageToolBox.btnZoomOut.anchor);
+                }, () =>
+                {
 
-            // 加载图片工具栏放大按钮
-            loadTextureFromTheme(style_.imageToolBox.btnZoomIn.image, (_texture) =>
-            {
-                var btn = uiReference_.tfImageToolBox.Find("btnZoomIn");
-                btn.GetComponent<RawImage>().texture = _texture;
-                alignByAncor(btn, style_.imageToolBox.btnZoomIn.anchor);
-            }, () =>
-            {
+                });
 
-            });
+                // 加载图片工具栏放大按钮
+                loadTextureFromTheme(style_.imageToolBox.btnZoomIn.image, (_texture) =>
+                {
+                    var btn = uiReference_.tfImageToolBox.Find("btnZoomIn");
+                    btn.GetComponent<RawImage>().texture = _texture;
+                    alignByAncor(btn, style_.imageToolBox.btnZoomIn.anchor);
+                }, () =>
+                {
 
-            // 加载图片关闭按钮
-            loadTextureFromTheme(style_.imageToolBox.btnBack.image, (_texture) =>
-            {
-                var btn = uiReference_.tfImageToolBox.Find("btnBack");
-                btn.GetComponent<RawImage>().texture = _texture;
-                alignByAncor(btn, style_.imageToolBox.btnBack.anchor);
-            }, () =>
-            {
+                });
 
-            });
+                // 加载图片关闭按钮
+                loadTextureFromTheme(style_.imageToolBox.btnBack.image, (_texture) =>
+                {
+                    var btn = uiReference_.tfImageToolBox.Find("btnBack");
+                    btn.GetComponent<RawImage>().texture = _texture;
+                    alignByAncor(btn, style_.imageToolBox.btnBack.anchor);
+                }, () =>
+                {
+
+                });
+            }
+
+            // 应用工具栏样式
+            {
+                var rtfTabbar = uiReference_.tfTabBar.GetComponent<RectTransform>();
+                rtfTabbar.anchoredPosition = new Vector2(0, style_.tabBar.offset);
+                uiReference_.tfTabBar.GetComponent<Mask>().enabled = style_.tabBar.useMask;
+                uiReference_.tfTabBar.GetComponent<Image>().enabled = style_.tabBar.useMask;
+                // 加载工具栏相关图片
+                loadTextureFromTheme(style_.tabBar.background.image, (_texture) =>
+                {
+                    Vector4 border = new Vector4(style_.tabBar.background.border.left, style_.tabBar.background.border.bottom, style_.tabBar.background.border.right, style_.tabBar.background.border.top);
+                    Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                    var image = uiReference_.tfTabBar.GetComponent<Image>();
+                    image.sprite = sprite;
+                    Color color;
+                    image = uiReference_.tfTabBar.Find("bg").GetComponent<Image>();
+                    image.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(style_.tabBar.background.color, out color))
+                        image.color = color;
+                    image.color = color;
+                }, () =>
+                {
+
+                });
+                // 加载关闭按钮图标
+                loadTextureFromTheme(style_.tabBar.closeButton.image, (_texture) =>
+                {
+                    uiReference_.btnTabClose.GetComponent<RawImage>().texture = _texture;
+                    alignByAncor(uiReference_.btnTabClose.transform, style_.tabBar.closeButton.anchor);
+                }, () =>
+                {
+
+                });
+            }
 
             // 应用标签样式
             {
@@ -528,6 +578,31 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     text.color = color;
                 text.fontSize = style_.labelButton.fontSize;
             }
+
+            Material matPanel = null;
+            Material matTitlebar = null;
+            Material matTabbar = null;
+            // 应用特效
+            if (style_.effect == "blur")
+            {
+                matPanel = rootAttachments.transform.Find("effect-blur/panel").GetComponent<RawImage>().material;
+                matTitlebar = rootAttachments.transform.Find("effect-blur/titlebar").GetComponent<RawImage>().material;
+                matTabbar = rootAttachments.transform.Find("effect-blur/tabbar").GetComponent<RawImage>().material;
+            }
+
+            if (matPanel != null)
+                uiReference_.tfPanel.Find("effect").GetComponent<Image>().material = matPanel;
+            else
+                uiReference_.tfPanel.Find("effect").gameObject.SetActive(false);
+            if (matTitlebar != null)
+                uiReference_.tfTitleBar.Find("effect").GetComponent<Image>().material = matTitlebar;
+            else
+                uiReference_.tfTitleBar.Find("effect").gameObject.SetActive(false);
+            if (matTabbar != null)
+                uiReference_.tfTabBar.Find("effect").GetComponent<Image>().material = matTabbar;
+            else
+                uiReference_.tfTabBar.Find("effect").gameObject.SetActive(false);
+
         }
 
         private void bindEvents()
@@ -820,26 +895,59 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             yield return new WaitForEndOfFrame();
             var rtCloseButton = uiReference_.btnTabClose.GetComponent<RectTransform>();
 
-            float width = 0;
-            foreach (var toggle in uiReference_.toggleTabS)
+            if (style_.tabBar.layout == "row")
             {
-                if (!toggle.gameObject.activeSelf)
-                    continue;
-                width += toggle.GetComponent<RectTransform>().sizeDelta.x;
-            }
-            width += rtCloseButton.sizeDelta.x;
+                float width = 0;
+                foreach (var toggle in uiReference_.toggleTabS)
+                {
+                    if (!toggle.gameObject.activeSelf)
+                        continue;
+                    width += toggle.GetComponent<RectTransform>().sizeDelta.x;
+                }
+                width += rtCloseButton.sizeDelta.x;
 
-            float offset = width / 2;
-            float lastX = -offset;
-            foreach (var toggle in uiReference_.toggleTabS)
-            {
-                if (!toggle.gameObject.activeSelf)
-                    continue;
-                var rt = toggle.GetComponent<RectTransform>();
-                rt.anchoredPosition = new Vector2(lastX + rt.sizeDelta.x / 2, 0);
-                lastX += rt.sizeDelta.x + style_.tabBar.space;
+                float offset = width / 2;
+                float lastX = -offset;
+                foreach (var toggle in uiReference_.toggleTabS)
+                {
+                    if (!toggle.gameObject.activeSelf)
+                        continue;
+                    var rt = toggle.GetComponent<RectTransform>();
+                    rt.anchoredPosition = new Vector2(lastX + rt.sizeDelta.x / 2, 0);
+                    lastX += rt.sizeDelta.x + style_.tabBar.space;
+                }
+                rtCloseButton.anchoredPosition = new Vector2(lastX + rtCloseButton.sizeDelta.x / 2, 0);
             }
-            rtCloseButton.anchoredPosition = new Vector2(lastX + rtCloseButton.sizeDelta.x / 2, 0);
+            else if (style_.tabBar.layout == "round")
+            {
+                List<RectTransform> targetS = new List<RectTransform>();
+                foreach (var toggle in uiReference_.toggleTabS)
+                {
+                    if (!toggle.gameObject.activeSelf)
+                        continue;
+                    targetS.Add(toggle.GetComponent<RectTransform>());
+                }
+                targetS.Add(uiReference_.btnTabClose.GetComponent<RectTransform>());
+                // 计算起始度数
+                float angle = -((targetS.Count - 1) * style_.tabBar.space / 2);
+
+                // 以panel中点到tabbar中点的距离为半径
+                float radius = uiReference_.tfTabBar.GetComponent<RectTransform>().rect.height / 2 + uiReference_.tfPanel.GetComponent<RectTransform>().rect.height / 2;
+                Debug.LogFormat("radius: {0}", radius);
+                // 设圆心位于tabbar中,并且坐标为(Qx, Qy),起点坐标为(Ox,Oy),则旋转n度的坐标点为(Tx,Ty)
+                //Tx = (Ox - Qx) * cos(n) - (Oy - Qy) * sin(n) + Qx;
+                //Ty = (Ox - Qx) * sin(n) + (Oy - Qy) * cos(n) + Qy;
+                Vector2 PointO = Vector2.zero;
+                Vector2 PointQ = new Vector2(0, radius);
+                foreach (var target in targetS)
+                {
+                    Vector2 PointT = Vector2.zero;
+                    PointT.x = (PointO.x - PointQ.x) * Mathf.Cos(angle * Mathf.Deg2Rad) - (PointO.y - PointQ.y) * Mathf.Sin(angle * Mathf.Deg2Rad) + PointQ.x;
+                    PointT.y = (PointO.x - PointQ.x) * Mathf.Sin(angle * Mathf.Deg2Rad) + (PointO.y - PointQ.y) * Mathf.Cos(angle * Mathf.Deg2Rad) + PointQ.y;
+                    target.anchoredPosition = new Vector2(PointT.x, PointT.y);
+                    angle += style_.tabBar.space;
+                }
+            }
         }
 
         private void publishSubject(MyConfigBase.Subject _subject, Dictionary<string, object> _variableS)
@@ -975,7 +1083,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             var rtFrame = uiReference_.frameDescription.GetComponent<RectTransform>();
             var sizeDelta = rtFrame.sizeDelta;
             // rtScrollView.sizeDelta.y 是负数
-            float height = Mathf.Min(rtText.sizeDelta.y - rtScrollView.sizeDelta.y, style_.sizeRange.descriptionMaxHeight);
+            float height = Mathf.Min(rtText.sizeDelta.y - rtScrollView.sizeDelta.y, style_.description.maxHeight);
             sizeDelta.y = height;
             rtFrame.sizeDelta = sizeDelta;
         }
@@ -1012,6 +1120,12 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 }
             }
             return variableS;
+        }
+
+        private IEnumerator delayDo(float _time, Action _onFinish)
+        {
+            yield return new WaitForSeconds(_time);
+            _onFinish();
         }
     }
 }

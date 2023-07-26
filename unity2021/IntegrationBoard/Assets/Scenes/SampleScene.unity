@@ -170,6 +170,7 @@ MonoBehaviour:
   mainCanvas: {fileID: 1388270489}
   mainWorld: {fileID: 1833906195}
   exportRoot: {fileID: 1687771971}
+  mainFont: {fileID: 0}
 --- !u!1 &539637067
 GameObject:
   m_ObjectHideFlags: 0
@@ -977,7 +978,8 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 6926393971462813710, guid: f7431182da2f06d46b1a982c062c0198, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f7431182da2f06d46b1a982c062c0198, type: 3}
 --- !u!1 &1687771971 stripped
 GameObject:
