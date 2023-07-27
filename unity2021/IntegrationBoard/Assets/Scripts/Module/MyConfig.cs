@@ -42,20 +42,14 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public Border border { get; set; } = new Border();
         }
 
-        public class PanelBackground : VisualUiElement
+        public class MainBackground : VisualUiElement
         {
-            [XmlAttribute("maskable")]
-            public bool maskable = true;
             [XmlElement("Margin")]
             public Border margin { get; set; } = new Border();
         }
 
-        public class MainMask
+        public class MainMask : VisualUiElement
         {
-            [XmlAttribute("image")]
-            public string image { get; set; } = "";
-            [XmlElement("Border")]
-            public Border border { get; set; } = new Border();
         }
 
         public class PageSlot
@@ -204,10 +198,14 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public int autoCloseTimeout { get; set; } = 0;
             [XmlAttribute("effect")]
             public string effect { get; set; } = "";
-            [XmlElement("MainMask")]
-            public MainMask mainMask { get; set; } = new MainMask();
             [XmlElement("AlignGrid")]
             public AlignGrid alignGrid { get; set; } = new AlignGrid();
+            [XmlElement("MainMask")]
+            public MainMask mainMask { get; set; } = new MainMask();
+            [XmlElement("MainBackground")]
+            public MainBackground mainBackground { get; set; } = new MainBackground();
+            [XmlElement("Panel")]
+            public VisualUiElement panel{ get; set; } = new VisualUiElement();
             [XmlElement("Like")]
             public Like like { get; set; } = new Like();
             [XmlElement("Topic")]
@@ -216,8 +214,6 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public Description description { get; set; } = new Description();
             [XmlElement("TitleBarBackground")]
             public VisualUiElement titleBarBackground { get; set; } = new VisualUiElement();
-            [XmlElement("PanelBackground")]
-            public PanelBackground panelBackground { get; set; } = new PanelBackground();
             [XmlElement("ToolBoxBackground")]
             public VisualUiElement toolBoxBackground { get; set; } = new VisualUiElement();
             [XmlArray("PageSlots"), XmlArrayItem("PageSlot")]

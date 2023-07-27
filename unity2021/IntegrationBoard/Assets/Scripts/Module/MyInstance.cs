@@ -285,18 +285,12 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             var rtTemplate = rootUI.transform.Find("Board").GetComponent<RectTransform>();
             rtTemplate.sizeDelta = new Vector2(style_.width, style_.height);
 
-            //Material defaultUIMaterial = rootAttachments.transform.Find("UIDefault").GetComponent<MeshRenderer>().material;
-            Material defaultUIMaterial = uiReference_.tfMask.gameObject.GetComponent<Image>().materialForRendering;
-            // 应用遮罩
+            // 应用主遮罩
             {
+                alignByAncor(uiReference_.tfMask, style_.mainMask.anchor);
                 var softmask = uiReference_.tfMask.gameObject.AddComponent<SoftMask>();
                 softmask.defaultUIShader = rootAttachments.transform.Find("softmask/SoftMask").GetComponent<MeshRenderer>().material.shader;
                 softmask.defaultUIETC1Shader = rootAttachments.transform.Find("softmask/SoftMaskETC1").GetComponent<MeshRenderer>().material.shader;
-                var rtfMask = uiReference_.tfMask.GetComponent<RectTransform>();
-                rtfMask.sizeDelta = new Vector2(style_.width, style_.height - style_.tabBar.offset);
-                rtfMask.anchoredPosition = new Vector2(0, style_.tabBar.offset / 2);
-                var rtfPanel = uiReference_.tfPanel.GetComponent<RectTransform>();
-                rtfPanel.sizeDelta = new Vector2(style_.width, style_.height - style_.tabBar.offset);
                 // 加载遮罩相关图片
                 loadTextureFromTheme(style_.mainMask.image, (_texture) =>
                 {
@@ -310,30 +304,29 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 });
             }
 
-            // 加载面板相关图片
-            loadTextureFromTheme(style_.panelBackground.image, (_texture) =>
+            // 应用主背景
             {
-                Vector4 border = new Vector4(style_.panelBackground.border.left, style_.panelBackground.border.bottom, style_.panelBackground.border.right, style_.panelBackground.border.top);
-                Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
-                Color color;
-                if (!ColorUtility.TryParseHtmlString(style_.panelBackground.color, out color))
-                    color = Color.white;
-                var image = uiReference_.tfPanel.Find("bg").GetComponent<Image>();
-                image.sprite = sprite;
-                image.color = color;
-                mono_.StartCoroutine(delayDo(1, () =>
+                var tfBackground = rootUI.transform.Find("Board/bg");
+                var tfEffect = rootUI.transform.Find("Board/effect");
+                alignByAncor(tfBackground, style_.mainBackground.anchor);
+                alignByAncor(tfEffect, style_.mainBackground.anchor);
+                loadTextureFromTheme(style_.mainBackground.image, (_texture) =>
                 {
-                    image.maskable = style_.panelBackground.maskable;
-                    image.materialForRendering = defaultUIMaterial;
-                    //if (!style_.panelBackground.maskable)
-                    //    image.materialForRendering.shader = defaultUIShader;
-                }));
-                RectTransform rtBg = image.GetComponent<RectTransform>();
-                rtBg.sizeDelta = new Vector2(-(style_.panelBackground.margin.left + style_.panelBackground.margin.right), -(style_.panelBackground.margin.top + style_.panelBackground.margin.bottom));
-            }, () =>
-            {
+                    Vector4 border = new Vector4(style_.mainBackground.border.left, style_.mainBackground.border.bottom, style_.mainBackground.border.right, style_.mainBackground.border.top);
+                    Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
+                    Color color;
+                    if (!ColorUtility.TryParseHtmlString(style_.mainBackground.color, out color))
+                        color = Color.white;
+                    var image = rootUI.transform.Find("Board/bg").GetComponent<Image>();
+                    image.sprite = sprite;
+                    image.color = color;
+                }, () =>
+                {
 
-            });
+                });
+            }
+
+            alignByAncor(uiReference_.tfPanel, style_.panel.anchor);
 
             // 加载标题栏相关图片
             loadTextureFromTheme(style_.titleBarBackground.image, (_texture) =>
@@ -591,9 +584,9 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             }
 
             if (matPanel != null)
-                uiReference_.tfPanel.Find("effect").GetComponent<Image>().material = matPanel;
+                rootUI.transform.Find("Board/effect").GetComponent<Image>().material = matPanel;
             else
-                uiReference_.tfPanel.Find("effect").gameObject.SetActive(false);
+                rootUI.transform.Find("Board/effect").gameObject.SetActive(false);
             if (matTitlebar != null)
                 uiReference_.tfTitleBar.Find("effect").GetComponent<Image>().material = matTitlebar;
             else
