@@ -205,7 +205,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             [XmlElement("MainBackground")]
             public MainBackground mainBackground { get; set; } = new MainBackground();
             [XmlElement("Panel")]
-            public VisualUiElement panel{ get; set; } = new VisualUiElement();
+            public VisualUiElement panel { get; set; } = new VisualUiElement();
             [XmlElement("Like")]
             public Like like { get; set; } = new Like();
             [XmlElement("Topic")]
@@ -232,6 +232,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
         public class EventHandler
         {
+            [XmlArray("OnOpenS"), XmlArrayItem("Subject")]
+            public Subject[] onOpenSubjectS { get; set; } = new Subject[0];
             [XmlArray("OnLikeS"), XmlArrayItem("Subject")]
             public Subject[] onLikeSubjectS { get; set; } = new Subject[0];
             [XmlArray("OnRefreshS"), XmlArrayItem("Subject")]

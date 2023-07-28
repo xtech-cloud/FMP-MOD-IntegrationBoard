@@ -178,6 +178,11 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 logger_.Debug("this integrationboard will autoclose after {0} seconds ...", style_.autoCloseTimeout);
                 coroutineAutoClose_ = mono_.StartCoroutine(autoClose());
             }
+
+            Dictionary<string, object> variableS = buildVariableS(style_.eventHandler.onCloseSubjectS);
+            variableS["{{uid}}"] = uid;
+            variableS["{{uri}}"] = activeContentUri_;
+            publishSubjects(style_.eventHandler.onOpenSubjectS, variableS);
         }
 
         /// <summary>
