@@ -19,9 +19,9 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         {
         }
 
-        public void DirectOpenInstanceAsync(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY, string _uiSlot)
+        public void DirectOpenInstanceAsync(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY, string _uiSlot, string _sender)
         {
-            mono_.StartCoroutine(directOpenInstanceAsync(_uid, _style, _source, _uri, _delay, _positionX, _positionY, _uiSlot));
+            mono_.StartCoroutine(directOpenInstanceAsync(_uid, _style, _source, _uri, _delay, _positionX, _positionY, _uiSlot, _sender));
         }
 
         public void DirectCloseInstanceAsync(string _uid, float _delay)
@@ -29,9 +29,9 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             mono_.StartCoroutine(directCloseInstanceAsync(_uid, _delay));
         }
 
-        private IEnumerator directOpenInstanceAsync(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY, string _uiSlot)
+        private IEnumerator directOpenInstanceAsync(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY, string _uiSlot, string _sender)
         {
-            logger_.Debug("directopen instance of {0}, uid is {1}, style is {2}, uiSlot is {3}", MyEntryBase.ModuleName, _uid, _style, _uiSlot);
+            logger_.Debug("directopen instance of {0}, uid is {1}, style is {2}, uiSlot is {3}, sender is {4}", MyEntryBase.ModuleName, _uid, _style, _uiSlot, _sender);
             // 延时一帧执行，在发布消息时不能动态注册
             yield return new WaitForEndOfFrame();
 
@@ -56,6 +56,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             Transform parentWorld = instanceWorld.transform.parent;
 
             instance = new MyInstance(_uid, _style, config_, catalog_, logger_, settings_, entry_, mono_, rootAttachment);
+            instance.sender = _sender;
             Vector2 viewportSize = parentUi.GetComponent<RectTransform>().rect.size;
             instance.GenerateAlignGrid(viewportSize);
             // 矫正坐标

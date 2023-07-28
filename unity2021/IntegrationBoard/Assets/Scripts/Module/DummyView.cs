@@ -75,6 +75,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         private void handleDirectOpen(LibMVCS.Model.Status _status, object _data)
         {
             getLogger().Debug("handle directopen {0} with data: {1}", MyEntryBase.ModuleName, JsonConvert.SerializeObject(_data));
+            string sender = "";
             string uid = "";
             string style = "";
             string source = "";
@@ -95,6 +96,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 position_y = (float)data["position_y"];
                 if (data.ContainsKey("uiSlot"))
                     uiSlot = (string)data["uiSlot"];
+                if (data.ContainsKey("sender"))
+                    sender = (string)data["sender"];
             }
             catch (Exception ex)
             {
@@ -102,7 +105,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 return;
             }
 
-            runtime.DirectOpenInstanceAsync(uid, style, source, uri, delay, position_x, position_y, uiSlot);
+            runtime.DirectOpenInstanceAsync(uid, style, source, uri, delay, position_x, position_y, uiSlot, sender);
         }
 
         private void handleDirectClose(LibMVCS.Model.Status _status, object _data)

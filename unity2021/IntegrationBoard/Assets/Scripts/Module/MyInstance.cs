@@ -57,6 +57,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             public Dictionary<string, GameObject> pageS = new Dictionary<string, GameObject>();
         }
 
+        public string sender { get; set; } = "";
+
         /// <summary>
         /// 吸附后的对齐网格
         /// </summary>
@@ -170,6 +172,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 Dictionary<string, object> parameters = new Dictionary<string, object>();
                 parameters["uid"] = uid;
                 parameters["delay"] = 0f;
+                // 此消息会触发HandleClosed
                 entry_.getDummyModel().Publish(MySubject.Close, parameters);
             };
 
@@ -182,6 +185,9 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             Dictionary<string, object> variableS = buildVariableS(style_.eventHandler.onCloseSubjectS);
             variableS["{{uid}}"] = uid;
             variableS["{{uri}}"] = activeContentUri_;
+            variableS["{{sender}}"] = sender;
+            variableS["{{position_x}}"] = adjustedX;
+            variableS["{{position_y}}"] = adjustedY;
             publishSubjects(style_.eventHandler.onOpenSubjectS, variableS);
         }
 
@@ -199,6 +205,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             Dictionary<string, object> variableS = buildVariableS(style_.eventHandler.onCloseSubjectS);
             variableS["{{uid}}"] = uid;
             variableS["{{uri}}"] = activeContentUri_;
+            variableS["{{sender}}"] = sender;
             publishSubjects(style_.eventHandler.onCloseSubjectS, variableS);
         }
 
@@ -931,7 +938,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
                 // 以panel中点到tabbar中点的距离为半径
                 float radius = uiReference_.tfTabBar.GetComponent<RectTransform>().rect.height / 2 + uiReference_.tfPanel.GetComponent<RectTransform>().rect.height / 2;
-                Debug.LogFormat("radius: {0}", radius);
+                //Debug.LogFormat("radius: {0}", radius);
                 // 设圆心位于tabbar中,并且坐标为(Qx, Qy),起点坐标为(Ox,Oy),则旋转n度的坐标点为(Tx,Ty)
                 //Tx = (Ox - Qx) * cos(n) - (Oy - Qy) * sin(n) + Qx;
                 //Ty = (Ox - Qx) * sin(n) + (Oy - Qy) * cos(n) + Qy;
