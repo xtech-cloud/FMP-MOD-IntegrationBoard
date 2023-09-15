@@ -34,6 +34,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
         public class UiReference
         {
+            public RectTransform board;
+            public RectTransform bg;
             public Transform tfMask;
             public Transform tfPanel;
             public Transform tfTabBar;
@@ -92,8 +94,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         private string activeContentUri_;
 
         private LibMVCS.Signal signalAddLike_;
-        private Coroutine coroutineAutoClose_;
         private List<GameObject> labelS_ = new List<GameObject>();
+        private AutoCloseMono autoClose_;
 
 
         public MyInstance(string _uid, string _style, MyConfig _config, MyCatalog _catalog, LibMVCS.Logger _logger, Dictionary<string, LibMVCS.Any> _settings, MyEntryBase _entry, MonoBehaviour _mono, GameObject _rootAttachments)
@@ -111,6 +113,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </remarks>
         public void HandleCreated()
         {
+            uiReference_.board = rootUI.transform.Find("Board").GetComponent<RectTransform>();
+            uiReference_.bg = rootUI.transform.Find("Board/bg").GetComponent<RectTransform>();
             uiReference_.tfMask = rootUI.transform.Find("Board/Mask");
             uiReference_.tfPanel = rootUI.transform.Find("Board/Mask/Panel");
             uiReference_.tfTabBar = rootUI.transform.Find("Board/TabBar");
@@ -145,6 +149,38 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 GenerateAlignGrid(instanceSize);
             }
             //this.AdjustPosition();
+            autoClose_ = rootUI.AddComponent<AutoCloseMono>();
+            autoClose_.Timeout = style_.autoCloseTimeout;
+
+            onAutoCloseTimeout = () =>
+            {
+                Dictionary<string, object> parameters = new Dictionary<string, object>();
+                parameters["uid"] = uid;
+                parameters["delay"] = 0f;
+                // 此消息会触发HandleClosed
+                entry_.getDummyModel().Publish(MySubject.Close, parameters);
+            };
+
+            // 不能直接使用autoClose_.onTimeout = onAutoCloseTimeout;
+            autoClose_.onTimeout = () =>
+            {
+                onAutoCloseTimeout();
+            };
+            autoClose_.checkFunc = (_position) =>
+            {
+                Vector2 position;
+                //对于设置为 Screen Space - Overlay 模式的 Canvas 中的 RectTransform，cam 参数应为 null。
+                if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(uiReference_.board, _position, null, out position))
+                    return false;
+
+                float xMin = Math.Min(uiReference_.bg.rect.xMin, uiReference_.board.rect.xMin);
+                float xMax = Math.Max(uiReference_.bg.rect.xMax, uiReference_.board.rect.xMax);
+                float yMin = Math.Min(uiReference_.bg.rect.yMin, uiReference_.board.rect.yMin);
+                float yMax = Math.Max(uiReference_.bg.rect.yMax, uiReference_.board.rect.yMax);
+                bool inRect = (position.x > xMin && position.x < xMax && position.y > yMin && position.y < yMax);
+                //Debug.LogFormat("inRect:{0} board:(left:{1},right:{2}, top:{3}, bottom:{4}) point:{5}", inRect, xMin, xMax, yMin, yMax, position);
+                return inRect;
+            };
         }
 
         /// <summary>
@@ -167,19 +203,11 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             refreshContent(_source, _uri);
             rootUI.gameObject.SetActive(true);
 
-            onAutoCloseTimeout = () =>
-            {
-                Dictionary<string, object> parameters = new Dictionary<string, object>();
-                parameters["uid"] = uid;
-                parameters["delay"] = 0f;
-                // 此消息会触发HandleClosed
-                entry_.getDummyModel().Publish(MySubject.Close, parameters);
-            };
 
             if (style_.autoCloseTimeout > 0)
             {
                 logger_.Debug("this integrationboard will autoclose after {0} seconds ...", style_.autoCloseTimeout);
-                coroutineAutoClose_ = mono_.StartCoroutine(autoClose());
+                autoClose_.Restart();
             }
 
             Dictionary<string, object> variableS = buildVariableS(style_.eventHandler.onCloseSubjectS);
@@ -196,11 +224,10 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         /// </summary>
         public void HandleClosed()
         {
-            rootUI.gameObject.SetActive(false);
-            if (null != coroutineAutoClose_)
+            if (null != rootUI.gameObject)
             {
-                mono_.StopCoroutine(coroutineAutoClose_);
-                coroutineAutoClose_ = null;
+                rootUI.gameObject.SetActive(false);
+                autoClose_.Stop();
             }
             Dictionary<string, object> variableS = buildVariableS(style_.eventHandler.onCloseSubjectS);
             variableS["{{uid}}"] = uid;
@@ -284,12 +311,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
         public void ResetAutoCloseTimer()
         {
-            if (null == coroutineAutoClose_)
-                return;
-
             logger_.Trace("Reset the timer of autoClose");
-            mono_.StopCoroutine(coroutineAutoClose_);
-            coroutineAutoClose_ = mono_.StartCoroutine(autoClose());
+            autoClose_.Restart();
         }
 
         private void applyStyle()
@@ -1099,16 +1122,6 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             int count;
             status.likeStatusS.TryGetValue(activeContentUri_, out count);
             uiReference_.tgLike.transform.Find("Label").GetComponent<Text>().text = count.ToString();
-        }
-
-        private IEnumerator autoClose()
-        {
-            yield return new WaitForSeconds(style_.autoCloseTimeout);
-            if (null != onAutoCloseTimeout)
-            {
-                onAutoCloseTimeout();
-            }
-            coroutineAutoClose_ = null;
         }
 
         private Dictionary<string, object> buildVariableS(MyConfig.Subject[] _subjectS)
