@@ -735,6 +735,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 uiReference_.frameTopic.gameObject.SetActive(topicVisible_);
                 uiReference_.txtDescription.text = _content.description;
                 uiReference_.frameDescription.gameObject.SetActive(descriptionVisible_);
+                mono_.StartCoroutine(fitDescription());
                 // topic和description均有值的时候，显示切换方式
                 if (topicVisible_ && descriptionVisible_)
                 {
