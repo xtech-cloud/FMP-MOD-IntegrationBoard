@@ -78,6 +78,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
 
             instance.themeObjectsPool.Prepare();
             instance.HandleCreated();
+            yield return new WaitForEndOfFrame();
 
             // 动态注册直系的MVCS
             entry_.DynamicRegister(_uid, logger_);

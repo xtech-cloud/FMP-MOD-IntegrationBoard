@@ -74,7 +74,7 @@ public class Root : RootBase
         {
             var uid = System.DateTime.UtcNow.ToString();
             directOpenInstanceS_.Add(uid);
-            entry_.__DebugDirectOpen(uid, "rectangle", "assloud://", "XTC.IntegrationBoard/1", 0, Random.Range(-Screen.width / 2, Screen.width / 2), Random.Range(-Screen.height / 2, Screen.height / 2), "MainCanvas");
+            entry_.__DebugDirectOpen(uid, "circle", "assloud://", "XTC.IntegrationBoard/1", 0, Random.Range(-Screen.width / 2, Screen.width / 2), Random.Range(-Screen.height / 2, Screen.height / 2), "MainCanvas");
         }
 
         if (GUI.Button(new Rect(0, 210, 100, 30), "Refresh"))
