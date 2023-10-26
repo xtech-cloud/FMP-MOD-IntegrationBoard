@@ -343,6 +343,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             {
                 var tfBackground = rootUI.transform.Find("Board/bg");
                 var tfEffect = rootUI.transform.Find("Board/effect");
+                tfBackground.gameObject.SetActive(false);
+                tfEffect.gameObject.SetActive(false);
                 alignByAncor(tfBackground, style_.mainBackground.anchor);
                 alignByAncor(tfEffect, style_.mainBackground.anchor);
                 loadTextureFromTheme(style_.mainBackground.image, (_texture) =>
@@ -358,6 +360,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                     image.color = color;
                     image = tfEffect.GetComponent<Image>();
                     image.sprite = sprite;
+                    tfBackground.gameObject.SetActive(true);
+                    tfEffect.gameObject.SetActive(true);
                 }, () =>
                 {
 
@@ -636,7 +640,6 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 uiReference_.tfTabBar.Find("effect").GetComponent<Image>().material = matTabbar;
             else
                 uiReference_.tfTabBar.Find("effect").gameObject.SetActive(false);
-
         }
 
         private void bindEvents()
