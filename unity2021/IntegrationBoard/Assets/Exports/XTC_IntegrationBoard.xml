@@ -456,7 +456,7 @@
       worldSlot: 3D世界的挂载槽路径，空值时使用World.slot
     -->
 	<Instances>
-		<Instance uid="default" style="circle" uiSlot="" worldSlot=""/>
+		<Instance uid="default" style="rectangle" uiSlot="" worldSlot=""/>
 	</Instances>
 	<!-- 预加载 -->
 	<Preload>

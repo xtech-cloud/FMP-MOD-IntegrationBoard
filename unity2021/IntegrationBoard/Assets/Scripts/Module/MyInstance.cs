@@ -324,14 +324,17 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 alignByAncor(tfEffect, style_.mainBackground.anchor);
                 loadTextureFromTheme(style_.mainBackground.image, (_texture) =>
                 {
+                    _texture.wrapMode = TextureWrapMode.Clamp;
                     Vector4 border = new Vector4(style_.mainBackground.border.left, style_.mainBackground.border.bottom, style_.mainBackground.border.right, style_.mainBackground.border.top);
                     Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
                     Color color;
                     if (!ColorUtility.TryParseHtmlString(style_.mainBackground.color, out color))
                         color = Color.white;
-                    var image = rootUI.transform.Find("Board/bg").GetComponent<Image>();
+                    var image = tfBackground.GetComponent<Image>();
                     image.sprite = sprite;
                     image.color = color;
+                    image = tfEffect.GetComponent<Image>();
+                    image.sprite = sprite;
                 }, () =>
                 {
 
@@ -343,6 +346,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             // 加载标题栏相关图片
             loadTextureFromTheme(style_.titleBarBackground.image, (_texture) =>
             {
+                _texture.wrapMode |= TextureWrapMode.Clamp;
                 Vector4 border = new Vector4(style_.titleBarBackground.border.left, style_.titleBarBackground.border.bottom, style_.titleBarBackground.border.right, style_.titleBarBackground.border.top);
                 Sprite sprite = Sprite.Create(_texture, new Rect(0, 0, _texture.width, _texture.height), new Vector2(0.5f, 0.5f), 100, 1, SpriteMeshType.Tight, border);
                 var image = uiReference_.tfTitleBar.GetComponent<Image>();
@@ -353,6 +357,8 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
                 image = uiReference_.tfTitleBar.Find("bg").GetComponent<Image>();
                 image.sprite = sprite;
                 image.color = color;
+                image = uiReference_.tfTitleBar.Find("effect").GetComponent<Image>();
+                image.sprite = sprite;
             }, () =>
             {
 
