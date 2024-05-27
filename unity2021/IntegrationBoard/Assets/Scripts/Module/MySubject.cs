@@ -25,6 +25,12 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
         public const string DirectClose = "/XTC/IntegrationBoard/DirectClose";
 
         /// <summary>
+        /// 关闭所有并销毁
+        /// </summary>
+        /// <see cref="https://github.com/xtech-cloud/fmp-doc/blob/main/module-hub/xtc_integrationboard/README.md"/>
+        public const string CloseAll = "/XTC/IntegrationBoard/CloseAll";
+
+        /// <summary>
         /// 刷新
         /// </summary>
         public const string Refresh = "/XTC/IntegrationBoard/Refresh";

@@ -29,6 +29,11 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             mono_.StartCoroutine(directCloseInstanceAsync(_uid, _delay));
         }
 
+        public void CloseAllInstanceAsync()
+        {
+            mono_.StartCoroutine(closeAllInstanceAsync());
+        }
+
         private IEnumerator directOpenInstanceAsync(string _uid, string _style, string _source, string _uri, float _delay, float _positionX, float _positionY, string _uiSlot, string _sender)
         {
             logger_.Debug("directopen instance of {0}, uid is {1}, style is {2}, uiSlot is {3}, sender is {4}", MyEntryBase.ModuleName, _uid, _style, _uiSlot, _sender);
@@ -116,6 +121,25 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             instance.themeObjectsPool.Dispose();
             // 动态注销直系的MVCS
             entry_.DynamicCancel(_uid, logger_);
+        }
+
+        private IEnumerator closeAllInstanceAsync()
+        {
+            yield return new WaitForEndOfFrame();
+
+            foreach (MyInstance instance in instances.Values)
+            {
+                instance.HandleClosed();
+                instance.assetObjectsPool.Dispose();
+                // 延时一帧执行，在发布消息时不能动态注销
+                yield return new WaitForEndOfFrame();
+                instance.HandleDeleted();
+                GameObject.Destroy(instance.rootUI);
+                instance.themeObjectsPool.Dispose();
+                // 动态注销直系的MVCS
+                entry_.DynamicCancel(instance.uid, logger_);
+            }
+            instances.Clear();
         }
 
         private bool detectCross(MyInstance _instance)

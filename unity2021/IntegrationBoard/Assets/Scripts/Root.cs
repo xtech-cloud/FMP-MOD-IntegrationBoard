@@ -94,6 +94,11 @@ public class Root : RootBase
                 entry_.__DebugResetAutoCloseTimer(uid);
         }
 
+        if (GUI.Button(new Rect(0, 300, 100, 30), "Close All"))
+        {
+            entry_.__DebugCloseAll();
+        }
+
     }
 }
 

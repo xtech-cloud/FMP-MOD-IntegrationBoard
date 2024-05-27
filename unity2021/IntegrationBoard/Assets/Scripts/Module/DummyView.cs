@@ -24,6 +24,7 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             addSubscriber(MySubject.ActivatePage, handleActivatePage);
             addSubscriber(MySubject.DirectOpen, handleDirectOpen);
             addSubscriber(MySubject.DirectClose, handleDirectClose);
+            addSubscriber(MySubject.CloseAll, handleCloseAll);
             addSubscriber(MySubject.Refresh, handleRefresh);
             addSubscriber(MySubject.ResetAutoCloseTimer, handleResetAutoCloseTimer);
         }
@@ -126,6 +127,12 @@ namespace XTC.FMP.MOD.IntegrationBoard.LIB.Unity
             }
 
             runtime.DirectCloseInstanceAsync(uid, delay);
+        }
+
+        private void handleCloseAll(LibMVCS.Model.Status _status, object _data)
+        {
+            getLogger().Debug("handle close all {0} with data", MyEntryBase.ModuleName);
+            runtime.CloseAllInstanceAsync();
         }
 
         private void handleRefresh(LibMVCS.Model.Status _status, object _data)
